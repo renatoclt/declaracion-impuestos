@@ -1,0 +1,111 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "edwin",
+      "password": "123456",
+      "name": "Edwin Fidel",
+      "email": "edwin@example.com",
+      "role": "taxpayer",
+      "documentType": "DNI",
+      "documentNumber": "71234567",
+      "address": "Av. Principal 123, Lima"
+    },
+    {
+      "id": 2,
+      "username": "ana",
+      "password": "654321",
+      "name": "Ana Torres",
+      "email": "ana@example.com",
+      "role": "taxpayer",
+      "documentType": "RUC",
+      "documentNumber": "20123456789",
+      "address": "Calle Secundaria 456, Arequipa"
+    },
+    {
+      "id": 3,
+      "username": "admin",
+      "password": "admin123",
+      "name": "Administrador",
+      "email": "admin@example.com",
+      "role": "admin",
+      "documentType": "DNI",
+      "documentNumber": "87654321"
+    }
+  ],
+  "taxTypes": [
+    {
+      "id": 101,
+      "name": "Impuesto a la Renta (IR)",
+      "description": "Impuesto sobre ingresos anuales.",
+      "rate": 0.30
+    },
+    {
+      "id": 102,
+      "name": "IGV",
+      "description": "Impuesto General a las Ventas.",
+      "rate": 0.18
+    }
+  ],
+  "incomes": [
+    {
+      "id": 201,
+      "userId": 1,
+      "source": "Salario",
+      "amount": 50000.00,
+      "period": "2025-01",
+      "description": "Ingresos por sueldo en empresa XYZ."
+    },
+    {
+      "id": 202,
+      "userId": 2,
+      "source": "Honorarios",
+      "amount": 20000.00,
+      "period": "2025-01",
+      "description": "Servicios profesionales."
+    }
+  ],
+  "expenses": [
+    {
+      "id": 301,
+      "userId": 1,
+      "category": "Educación",
+      "amount": 5000.00,
+      "period": "2025-01",
+      "description": "Matrícula universitaria."
+    },
+    {
+      "id": 302,
+      "userId": 2,
+      "category": "Salud",
+      "amount": 3000.00,
+      "period": "2025-01",
+      "description": "Seguro médico."
+    }
+  ],
+  "declarations": [
+    {
+      "id": 401,
+      "userId": 1,
+      "period": "2025-01",
+      "totalIncome": 50000.00,
+      "totalExpenses": 5000.00,
+      "taxableIncome": 45000.00,
+      "taxAmount": 13500.00,
+      "status": "completed",
+      "taxTypeId": 101,
+      "receiptUrl": "https://ejemplo.com/comprobante1.pdf"
+    },
+    {
+      "id": 402,
+      "userId": 2,
+      "period": "2025-01",
+      "totalIncome": 20000.00,
+      "totalExpenses": 3000.00,
+      "taxableIncome": 17000.00,
+      "taxAmount": 5100.00,
+      "status": "pending",
+      "taxTypeId": 101
+    }
+  ]
+}
