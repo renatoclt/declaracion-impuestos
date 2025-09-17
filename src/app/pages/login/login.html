@@ -1,0 +1,99 @@
+<div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center bg-light">
+      <div class="row w-100 justify-content-center">
+        <div class="col-md-6 col-lg-4">
+          <mat-card class="login-card shadow-lg">
+            <mat-card-header class="text-center mb-4">
+              <mat-card-title>
+                <mat-icon class="me-2 text-primary">lock</mat-icon>
+                Iniciar Sesión
+              </mat-card-title>
+              <mat-card-subtitle>Ingrese sus credenciales</mat-card-subtitle>
+            </mat-card-header>
+
+            <mat-card-content>
+              <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+                <!-- Tipo de Documento -->
+                <mat-form-field appearance="outline" class="w-100 mb-3">
+                  <mat-label>Tipo de Documento</mat-label>
+                  <mat-select formControlName="documentType" required>
+                    <mat-option value="DNI">DNI</mat-option>
+                    <mat-option value="RUC">RUC</mat-option>
+                  </mat-select>
+                  @if (loginForm.get('documentType')?.invalid && loginForm.get('documentType')?.touched) {
+                    <mat-error>Seleccione un tipo de documento</mat-error>
+                  }
+                </mat-form-field>
+
+                <!-- Número de Documento -->
+                <mat-form-field appearance="outline" class="w-100 mb-3">
+                  <mat-label>Número de Documento</mat-label>
+                  <input
+                    matInput
+                    formControlName="documentNumber"
+                    [placeholder]="getDocumentPlaceholder()"
+                    maxlength="11"
+                    type="text">
+                  @if (loginForm.get('documentNumber')?.hasError('required') && loginForm.get('documentNumber')?.touched) {
+                    <mat-error>El número de documento es requerido</mat-error>
+                  }
+                  @if (loginForm.get('documentNumber')?.hasError('invalidDocument') && loginForm.get('documentNumber')?.touched) {
+                    <mat-error>{{ getDocumentErrorMessage() }}</mat-error>
+                  }
+                </mat-form-field>
+
+                <!-- Contraseña -->
+                <mat-form-field appearance="outline" class="w-100 mb-3">
+                  <mat-label>Contraseña</mat-label>
+                  <input
+                    matInput
+                    formControlName="password"
+                    [type]="hidePassword() ? 'password' : 'text'"
+                    autocomplete="current-password">
+                  <button
+                    mat-icon-button
+                    matSuffix
+                    type="button"
+                    (click)="togglePasswordVisibility()"
+                    [attr.aria-label]="'Hide password'"
+                    [attr.aria-pressed]="hidePassword()">
+                    <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+                  </button>
+                  @if (loginForm.get('password')?.hasError('required') && loginForm.get('password')?.touched) {
+                    <mat-error>La contraseña es requerida</mat-error>
+                  }
+                  @if (loginForm.get('password')?.hasError('minlength') && loginForm.get('password')?.touched) {
+                    <mat-error>La contraseña debe tener al menos 6 caracteres</mat-error>
+                  }
+                </mat-form-field>
+
+                <!-- Mensaje de Error -->
+                @if (hasError() && errorMessage()) {
+                  <div class="alert alert-danger mb-3" role="alert">
+                    <mat-icon class="me-2">error</mat-icon>
+                    {{ errorMessage() }}
+                  </div>
+                }
+
+                <!-- Botón de Envío -->
+                <button
+                  mat-raised-button
+                  color="primary"
+                  type="submit"
+                  class="w-100 py-2"
+                  [disabled]="loginForm.invalid || isLoading()">
+                  @if (isLoading()) {
+                    <mat-spinner diameter="20" class="me-2"></mat-spinner>
+                    Verificando...
+                  } @else {
+                     <ng-container>
+                       <mat-icon class="me-2">login</mat-icon>
+                       Iniciar Sesión
+                     </ng-container>
+                  }
+                </button>
+              </form>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+    </div>

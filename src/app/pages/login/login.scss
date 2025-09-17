@@ -1,0 +1,37 @@
+.login-card {
+  max-width: 400px;
+  margin: 0 auto;
+  border-radius: 16px;
+  border: none;
+}
+
+.mat-mdc-card-header {
+  padding-bottom: 16px;
+}
+
+.mat-mdc-form-field {
+  margin-bottom: 16px;
+}
+
+.alert {
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.mat-mdc-raised-button {
+  height: 48px;
+  font-weight: 500;
+}
+
+.bg-light {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+.shadow-lg {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+}
+
+mat-spinner {
+  display: inline-block;
+}
