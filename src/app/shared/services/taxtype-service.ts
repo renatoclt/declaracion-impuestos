@@ -2,11 +2,12 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { TaxType } from '../Interfaces/taxtype.interface';
+import { environment } from '@/app/pages/environment/environment';
 @Injectable({
   providedIn: 'root'
 })
 export class TaxTypeService {
-  private apiUrl = 'http://localhost:3000/taxTypes';
+  private apiUrl = `${environment.apiUrl}/taxTypes`;
 
   constructor(private http: HttpClient){}
 
