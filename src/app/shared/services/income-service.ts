@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { forkJoin, map, Observable } from 'rxjs';
-import { TaxType } from '../Interfaces/taxtype.interface';
 import { UserService } from './user-service';
 import { Income } from '../Interfaces/income.interface';
 import { User } from '../Interfaces/user.interface';
@@ -32,12 +31,12 @@ export class IncomeService {
         return this.http.get<Income>(`${this.apiUrl}/${id}`);
     }
 
-    addIncome(taxtype: Income): Observable<Income> {
-        return this.http.post<Income>(this.apiUrl, taxtype)
+    addIncome(income: Income): Observable<Income> {
+        return this.http.post<Income>(this.apiUrl, income)
     }
 
-    updateIncome(taxtype: Income): Observable<Income> {
-        return this.http.put<Income>(`${this.apiUrl}/${taxtype.id}`, taxtype);
+    updateIncome(income: Income): Observable<Income> {
+        return this.http.put<Income>(`${this.apiUrl}/${income.id}`, income);
     }
 
     deleteIncome(id: number): Observable<any> {
