@@ -47,6 +47,11 @@ export class Login {
         this.errorMessage.set('');
       }
     });
+
+    // Validar documentNumber al cambiar documentType
+    this.loginForm.get('documentType')?.valueChanges.subscribe(() => {
+      this.loginForm.get('documentNumber')?.updateValueAndValidity();
+    });
   }
 
   onSubmit(): void {
@@ -65,6 +70,7 @@ export class Login {
               duration: 3000,
               panelClass: ['success-snackbar']
             });
+            console.log(response.role);
             this.authService.redirectByRole(response.role);
           }
         },

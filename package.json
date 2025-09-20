@@ -33,6 +33,7 @@
     "@ngrx/effects": "^20.0.1",
     "@ngrx/store": "^20.0.1",
     "bootstrap": "^5.3.8",
+    "json-server": "^1.0.0-beta.3",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
