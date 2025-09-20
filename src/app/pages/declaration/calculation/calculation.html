@@ -1,0 +1,290 @@
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-12">
+      <mat-card class="calculation-card">
+        <mat-card-header class="bg-primary text-white rounded-top p-3 mb-4">
+          <mat-card-title class="mb-0">
+            <mat-icon class="me-2">calculate</mat-icon>
+            Cálculo de Impuestos
+          </mat-card-title>
+          <mat-card-subtitle class="text-white-50 mt-2">
+            Sistema de cálculo automático de IR e IGV
+          </mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content>
+          @if (isLoading()) {
+            <div class="text-center py-5">
+              <mat-spinner diameter="50"></mat-spinner>
+              <p class="mt-3 text-muted">Cargando datos...</p>
+            </div>
+          } @else {
+            <!-- Formulario Principal -->
+            <form [formGroup]="calculationForm" (ngSubmit)="onSubmit()" class="mb-4">
+              <div class="row g-3">
+                <!-- Selección de Usuario -->
+                <div class="col-md-4">
+                  <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Seleccionar Contribuyente</mat-label>
+                    <mat-select formControlName="userId" required>
+                      @for (user of users(); track user.id) {
+                        <mat-option [value]="user.id">
+                          {{ user.name }} ({{ user.documentType }}: {{ user.documentNumber }})
+                        </mat-option>
+                      }
+                    </mat-select>
+                    <mat-error>Debe seleccionar un contribuyente</mat-error>
+                  </mat-form-field>
+                </div>
+
+                <!-- Período -->
+                <div class="col-md-4">
+                  <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Período</mat-label>
+                    <mat-select formControlName="period" required>
+                      <mat-option value="2025-01">Enero 2025</mat-option>
+                      <mat-option value="2025-02">Febrero 2025</mat-option>
+                      <mat-option value="2025-03">Marzo 2025</mat-option>
+                      <mat-option value="2024-12">Diciembre 2024</mat-option>
+                      <mat-option value="2024-11">Noviembre 2024</mat-option>
+                    </mat-select>
+                    <mat-error>Debe seleccionar un período</mat-error>
+                  </mat-form-field>
+                </div>
+
+                <!-- Tipo de Impuesto -->
+                <div class="col-md-4">
+                  <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Tipo de Impuesto</mat-label>
+                    <mat-select formControlName="taxTypeId" required>
+                      @for (taxType of taxTypes(); track taxType.id) {
+                        <mat-option [value]="taxType.id">
+                          {{ taxType.name }} ({{ (taxType.rate * 100) }}%)
+                        </mat-option>
+                      }
+                    </mat-select>
+                    <mat-error>Debe seleccionar un tipo de impuesto</mat-error>
+                  </mat-form-field>
+                </div>
+              </div>
+
+              <!-- Botones de Acción -->
+              <div class="row mt-4">
+                <div class="col-12">
+                  <div class="d-flex gap-2 flex-wrap">
+                    <button
+                      mat-raised-button
+                      color="primary"
+                      type="submit"
+                      [disabled]="calculationForm.invalid || !taxCalculation()"
+                      class="btn-action">
+                      <mat-icon>save</mat-icon>
+                      Guardar Cálculo
+                    </button>
+
+                    <button
+                      mat-raised-button
+                      color="accent"
+                      type="button"
+                      (click)="generatePDF()"
+                      [disabled]="!taxCalculation()"
+                      class="btn-action">
+                      <mat-icon>picture_as_pdf</mat-icon>
+                      Generar PDF
+                    </button>
+
+                    <button
+                      mat-stroked-button
+                      type="button"
+                      (click)="resetForm()"
+                      class="btn-action">
+                      <mat-icon>refresh</mat-icon>
+                      Limpiar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </form>
+
+            @if (errorMessage()) {
+              <div class="alert alert-danger" role="alert">
+                <mat-icon class="me-2">error</mat-icon>
+                {{ errorMessage() }}
+              </div>
+            }
+
+            <!-- Información del Usuario Seleccionado -->
+            @if (selectedUser()) {
+              <mat-card class="user-info-card mb-4">
+                <mat-card-header>
+                  <mat-card-title class="h5">
+                    <mat-icon class="me-2">person</mat-icon>
+                    Información del Contribuyente
+                  </mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <p><strong>Nombre:</strong> {{ selectedUser()!.name }}</p>
+                      <p><strong>Email:</strong> {{ selectedUser()!.email }}</p>
+                    </div>
+                    <div class="col-md-6">
+                      <p><strong>Documento:</strong> {{ selectedUser()!.documentType }} - {{ selectedUser()!.documentNumber }}</p>
+                      @if (selectedUser()!.address) {
+                        <p><strong>Dirección:</strong> {{ selectedUser()!.address }}</p>
+                      }
+                    </div>
+                  </div>
+                </mat-card-content>
+              </mat-card>
+            }
+
+            <!-- Resumen de Cálculo -->
+            @if (taxCalculation()) {
+              <mat-card class="tax-summary-card mb-4">
+                <mat-card-header class="bg-success text-white">
+                  <mat-card-title class="h5 mb-0">
+                    <mat-icon class="me-2">assessment</mat-icon>
+                    Resumen de Cálculo
+                  </mat-card-title>
+                </mat-card-header>
+                <mat-card-content class="p-4">
+                  <div class="row g-4">
+                    <div class="col-md-3">
+                      <div class="summary-item">
+                        <h6 class="text-muted mb-1">Total Ingresos</h6>
+                        <h4 class="text-success mb-0">S/ {{ taxCalculation()!.totalIncome.toFixed(2) }}</h4>
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                      <div class="summary-item">
+                        <h6 class="text-muted mb-1">Total Gastos</h6>
+                        <h4 class="text-warning mb-0">S/ {{ taxCalculation()!.totalExpenses.toFixed(2) }}</h4>
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                      <div class="summary-item">
+                        <h6 class="text-muted mb-1">Renta Gravable</h6>
+                        <h4 class="text-info mb-0">S/ {{ taxCalculation()!.taxableIncome.toFixed(2) }}</h4>
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                      <div class="summary-item">
+                        <h6 class="text-muted mb-1">Total Impuesto</h6>
+                        <h4 class="text-danger mb-0">S/ {{ taxCalculation()!.totalTax.toFixed(2) }}</h4>
+                      </div>
+                    </div>
+                  </div>
+
+                  <hr class="my-4">
+
+                  <div class="row">
+                    <div class="col-md-6">
+                      <h6>Desglose de Impuestos:</h6>
+                      <ul class="list-unstyled">
+                        <li class="d-flex justify-content-between">
+                          <span>Impuesto a la Renta (IR):</span>
+                          <strong>S/ {{ taxCalculation()!.irTax.toFixed(2) }}</strong>
+                        </li>
+                        <li class="d-flex justify-content-between">
+                          <span>IGV:</span>
+                          <strong>S/ {{ taxCalculation()!.igvTax.toFixed(2) }}</strong>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </mat-card-content>
+              </mat-card>
+            }
+
+            <!-- Detalles de Ingresos y Gastos -->
+            @if (filteredIncomes().length > 0 || filteredExpenses().length > 0) {
+              <div class="row">
+                <!-- Tabla de Ingresos -->
+                @if (filteredIncomes().length > 0) {
+                  <div class="col-md-6 mb-4">
+                    <mat-card>
+                      <mat-card-header class="bg-light">
+                        <mat-card-title class="h6 mb-0">
+                          <mat-icon class="me-2 text-success">trending_up</mat-icon>
+                          Ingresos del Período
+                        </mat-card-title>
+                      </mat-card-header>
+                      <mat-card-content class="p-0">
+                        <mat-table [dataSource]="filteredIncomes()" class="w-100">
+                          <ng-container matColumnDef="source">
+                            <mat-header-cell *matHeaderCellDef>Fuente</mat-header-cell>
+                            <mat-cell *matCellDef="let income">{{ income.source }}</mat-cell>
+                          </ng-container>
+
+                          <ng-container matColumnDef="amount">
+                            <mat-header-cell *matHeaderCellDef>Monto</mat-header-cell>
+                            <mat-cell *matCellDef="let income">
+                              <span class="badge bg-success">S/ {{ income.amount.toFixed(2) }}</span>
+                            </mat-cell>
+                          </ng-container>
+
+                          <ng-container matColumnDef="description">
+                            <mat-header-cell *matHeaderCellDef>Descripción</mat-header-cell>
+                            <mat-cell *matCellDef="let income">{{ income.description }}</mat-cell>
+                          </ng-container>
+
+                          <mat-header-row *matHeaderRowDef="displayedIncomeColumns"></mat-header-row>
+                          <mat-row *matRowDef="let row; columns: displayedIncomeColumns;"></mat-row>
+                        </mat-table>
+                      </mat-card-content>
+                    </mat-card>
+                  </div>
+                }
+
+                <!-- Tabla de Gastos -->
+                @if (filteredExpenses().length > 0) {
+                  <div class="col-md-6 mb-4">
+                    <mat-card>
+                      <mat-card-header class="bg-light">
+                        <mat-card-title class="h6 mb-0">
+                          <mat-icon class="me-2 text-danger">trending_down</mat-icon>
+                          Gastos del Período
+                        </mat-card-title>
+                      </mat-card-header>
+                      <mat-card-content class="p-0">
+                        <mat-table [dataSource]="filteredExpenses()" class="w-100">
+                          <ng-container matColumnDef="category">
+                            <mat-header-cell *matHeaderCellDef>Categoría</mat-header-cell>
+                            <mat-cell *matCellDef="let expense">{{ expense.category }}</mat-cell>
+                          </ng-container>
+
+                          <ng-container matColumnDef="amount">
+                            <mat-header-cell *matHeaderCellDef>Monto</mat-header-cell>
+                            <mat-cell *matCellDef="let expense">
+                              <span class="badge bg-warning">S/ {{ expense.amount.toFixed(2) }}</span>
+                            </mat-cell>
+                          </ng-container>
+
+                          <ng-container matColumnDef="description">
+                            <mat-header-cell *matHeaderCellDef>Descripción</mat-header-cell>
+                            <mat-cell *matCellDef="let expense">{{ expense.description }}</mat-cell>
+                          </ng-container>
+
+                          <mat-header-row *matHeaderRowDef="displayedExpenseColumns"></mat-header-row>
+                          <mat-row *matRowDef="let row; columns: displayedExpenseColumns;"></mat-row>
+                        </mat-table>
+                      </mat-card-content>
+                    </mat-card>
+                  </div>
+                }
+              </div>
+            }
+
+            @if (selectedUser() && filteredIncomes().length === 0 && filteredExpenses().length === 0 && calculationForm.get('period')?.value) {
+              <div class="alert alert-info" role="alert">
+                <mat-icon class="me-2">info</mat-icon>
+                No se encontraron ingresos ni gastos para el contribuyente y período seleccionados.
+              </div>
+            }
+          }
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

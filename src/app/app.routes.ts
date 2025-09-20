@@ -15,5 +15,9 @@ export const routes: Routes = [
   {
     path: 'user-dashboard',
     component: UserDashboard
-  }
+  },
+   {
+    path: 'declaration',
+    loadChildren: () => import('./pages/declaration/declaration.routes').then(m => m.declaration)
+  },
 ];

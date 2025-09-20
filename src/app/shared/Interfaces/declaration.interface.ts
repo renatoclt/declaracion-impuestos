@@ -1,5 +1,5 @@
 export interface Declaration{
-    id: number,
+    id?: number,
     userId: number,
     period: string,
     totalIncome: number,
@@ -8,5 +8,5 @@ export interface Declaration{
     taxAmount: number,
     status: string,
     taxTypeId: number,
-    receiptUrl: string
+    // receiptUrl: string TODO Luego utilizarlo
 }
