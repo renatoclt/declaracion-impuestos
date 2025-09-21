@@ -1,0 +1,74 @@
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <mat-card>
+                <mat-card-header class="bg-primary text-white rounded-top p-3 mb-4">
+                    <mat-card-title class="mb-0">
+                        <mat-icon class="me-2">payment_arrow_down</mat-icon>
+                        Formulario fuentes de ingreso
+                    </mat-card-title>
+                    <mat-card-subtitle class="text-white-50 mt-2">
+                        Para ingresar salarios, alquileres, etc.
+                    </mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                    <div class="row" [formGroup]="formGroupIncome" >
+                        <!-- Selección de Usuario -->
+                        <div class="col-sm-12 col-md-4 mt-3">
+                            <mat-form-field appearance="outline" class="w-100">
+                                <mat-label>Seleccionar Tipo de Ingreso</mat-label>
+                                <mat-select required formControlName="type">
+                                    @for (type of typesIncome(); track type){
+                                        <mat-option [value]="type">{{ type }}</mat-option>
+                                    }
+                                </mat-select>
+                                <mat-error>Debe seleccionar un tipo de ingreso</mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-sm-12 col-md-4 mt-3">
+                            <mat-form-field appearance="outline" class="w-100">
+                                <mat-label>Monto</mat-label>
+                                <input matInput type="text" formControlName="amount" appNumberFormat required />
+                                <mat-error>Debe ingresar un monto</mat-error>
+                                <span matTextSuffix>$&nbsp;</span>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-sm-6 col-md-2 mt-3">
+                            <mat-form-field appearance="outline" class="w-100">
+                                <mat-label>Año</mat-label>
+                                <mat-select formControlName="year">
+                                    @for (year of years(); track year){
+                                        <mat-option [value]="year">{{ year }}</mat-option>
+                                    }
+                                </mat-select>
+                                <mat-error>Debe seleccionar un contribuyente</mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-sm-6 col-md-2 mt-3">
+                            <mat-form-field appearance="outline" class="w-100">
+                                <mat-label>Mes</mat-label>
+                                <mat-select formControlName="month">
+                                    @for (month of months(); track month){
+                                        <mat-option [value]="month.value">{{ month.viewValue }}</mat-option>
+                                    }
+                                </mat-select>
+                                <mat-error>Debe seleccionar un contribuyente</mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-sm-12 mt-2">
+                            <mat-form-field appearance="outline" class="w-100">
+                                <mat-label>Descripción</mat-label>
+                                <input matInput type="text" formControlName="description"/>
+                                <mat-error>Debe ingresar una descripción</mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-12 mt-2">
+                            <button matButton="filled" (click)="onSave()">{{textButton}}</button>
+                            <button matButton="tonal" class="mx-2" (click)="formGroupIncome.reset()">Limpiar Formulario</button>
+                        </div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+        </div>
+    </div>
+</div>

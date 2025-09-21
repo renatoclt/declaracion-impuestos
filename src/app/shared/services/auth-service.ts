@@ -20,48 +20,49 @@ export class AuthService {
 
   private readonly TOKEN_KEY = 'auth_token';
   private readonly ROLE_KEY = 'user_role';
+  private readonly USER_ID = 'user_id';
 
 
   login(credentials: LoginCredentials): Observable<AuthResponse> {
-  // Obtener usuarios desde el servicio y validar credenciales
-  return this.userService.getUser().pipe(
-    map(users => {
-      // Validar credenciales contra usuarios obtenidos del servicio
-      const user = users.find(u =>
-        u.documentType === credentials.documentType &&
-        u.documentNumber === credentials.documentNumber &&
-        u.password === credentials.password
-      );
+    // Obtener usuarios desde el servicio y validar credenciales
+    return this.userService.getUser().pipe(
+      map(users => {
+        // Validar credenciales contra usuarios obtenidos del servicio
+        const user = users.find(u =>
+          u.documentType === credentials.documentType &&
+          u.documentNumber === credentials.documentNumber &&
+          u.password === credentials.password
+        );
 
-      if (user) {
-        // Simular JWT token
-        const mockToken = this.generateMockJWT(user.documentNumber, user.role);
+        if (user) {
+          // Simular JWT token
+          const mockToken = this.generateMockJWT(user.documentNumber, user.role);
 
-        // Almacenar token y rol de forma segura
-        this.storeAuthData(mockToken, user.role);
+          // Almacenar token y rol de forma segura
+          this.storeAuthData(mockToken, user.role, String(user.id));
 
-        // Actualizar signal
-        this.isAuthenticated.set(true);
+          // Actualizar signal
+          this.isAuthenticated.set(true);
 
-        return {
-          success: true,
-          token: mockToken,
-          role: user.role,
-          message: 'Autenticación exitosa'
-        };
-      } else {
-        // Error genérico para prevenir enumeración de usuarios
-        throw new Error('Credenciales incorrectas');
-      }
-    }),
-    catchError((error: any) => {
-      return throwError(() => ({
-        success: false,
-        message: 'Credenciales incorrectas'
-      }));
-    })
-  );
-}
+          return {
+            success: true,
+            token: mockToken,
+            role: user.role,
+            message: 'Autenticación exitosa'
+          };
+        } else {
+          // Error genérico para prevenir enumeración de usuarios
+          throw new Error('Credenciales incorrectas');
+        }
+      }),
+      catchError((error: any) => {
+        return throwError(() => ({
+          success: false,
+          message: 'Credenciales incorrectas'
+        }));
+      })
+    );
+  }
 
   logout(): void {
     localStorage.removeItem(this.TOKEN_KEY);
@@ -77,6 +78,10 @@ export class AuthService {
   getUserRole(): UserRole | null {
     const role = localStorage.getItem(this.ROLE_KEY);
     return (role === UserRole.Admin || role === UserRole.Taxpayer) ? role : null;
+  }
+
+  getUserId(): string | null {
+    return localStorage.getItem(this.USER_ID);
   }
 
   redirectByRole(role: UserRole): void {
@@ -100,9 +105,10 @@ export class AuthService {
     }
   }
 
-  private storeAuthData(token: string, role: UserRole): void {
+  private storeAuthData(token: string, role: UserRole, id: string): void {
     localStorage.setItem(this.TOKEN_KEY, token);
     localStorage.setItem(this.ROLE_KEY, role);
+    localStorage.setItem(this.USER_ID, id);
   }
 
   private generateMockJWT(documentNumber: string, role: UserRole): string {

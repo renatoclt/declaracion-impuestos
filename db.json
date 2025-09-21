@@ -1,7 +1,7 @@
 {
   "users": [
     {
-      "id": 1,
+      "id": "1",
       "username": "edwin",
       "password": "123456",
       "name": "Edwin Fidel",
@@ -12,7 +12,7 @@
       "address": "Av. Principal 123, Lima"
     },
     {
-      "id": 2,
+      "id": "2",
       "username": "ana",
       "password": "654321",
       "name": "Ana Torres",
@@ -23,7 +23,7 @@
       "address": "Calle Secundaria 456, Arequipa"
     },
     {
-      "id": 3,
+      "id": "3",
       "username": "admin",
       "password": "admin123",
       "name": "Administrador",
@@ -35,13 +35,13 @@
   ],
   "taxTypes": [
     {
-      "id": 101,
+      "id": "101",
       "name": "Impuesto a la Renta (IR)",
       "description": "Impuesto sobre ingresos anuales.",
-      "rate": 0.30
+      "rate": 0.3
     },
     {
-      "id": 102,
+      "id": "102",
       "name": "IGV",
       "description": "Impuesto General a las Ventas.",
       "rate": 0.18
@@ -49,61 +49,93 @@
   ],
   "incomes": [
     {
-      "id": 201,
+      "id": "201",
       "userId": 1,
       "source": "Salario",
-      "amount": 50000.00,
+      "amount": 50000,
       "period": "2025-01",
       "description": "Ingresos por sueldo en empresa XYZ."
     },
     {
-      "id": 202,
+      "id": "202",
       "userId": 2,
-      "source": "Honorarios",
-      "amount": 20000.00,
+      "source": "Honorario",
+      "amount": 20000,
       "period": "2025-01",
       "description": "Servicios profesionales."
+    },
+    {
+      "id": "203",
+      "userId": 3,
+      "source": "Salario",
+      "amount": 4000,
+      "period": "2025-09",
+      "description": "prueba"
+    },
+    {
+      "id": "204",
+      "userId": 3,
+      "source": "Otros",
+      "amount": 2500,
+      "period": "2025-09",
+      "description": "Ingreso de ventas"
+    },
+    {
+      "id": "205",
+      "userId": 3,
+      "source": "Honorario",
+      "amount": 4500,
+      "period": "2025-09",
+      "description": "sueldo extra"
+    },
+    {
+      "id": "206",
+      "userId": 3,
+      "source": "Alquiler",
+      "amount": 1200,
+      "period": "2025-09",
+      "description": "Alquiler del departamento de Cercado de Lima"
     }
   ],
   "expenses": [
     {
-      "id": 301,
+      "id": "301",
       "userId": 1,
       "category": "Educación",
-      "amount": 5000.00,
+      "amount": 5000,
       "period": "2025-01",
       "description": "Matrícula universitaria."
     },
     {
-      "id": 302,
+      "id": "302",
       "userId": 2,
       "category": "Salud",
-      "amount": 3000.00,
+      "amount": 3000,
       "period": "2025-01",
       "description": "Seguro médico."
     }
   ],
   "declarations": [
     {
-      "id": 401,
+      "id": "401",
       "userId": 1,
       "period": "2025-01",
-      "totalIncome": 50000.00,
-      "totalExpenses": 5000.00,
-      "taxableIncome": 45000.00,
-      "taxAmount": 13500.00,
+      "totalIncome": 50000,
+      "totalExpenses": 5000,
+      "taxableIncome": 45000,
+      "taxAmount": 13500,
       "status": "completed",
       "taxTypeId": 101,
       "receiptUrl": "https://ejemplo.com/comprobante1.pdf"
     },
     {
-      "id": 402,
+      "id": "402",
       "userId": 2,
       "period": "2025-01",
-      "totalIncome": 20000.00,
-      "totalExpenses": 3000.00,
-      "taxableIncome": 17000.00,
-      "taxAmount": 5100.00,
+      "totalIncome": 20000,
+      "totalExpenses": 3000,
+      "taxableIncome": 17000,
+      "taxAmount": 5100,
       "status": "pending",
       "taxTypeId": 101
     }

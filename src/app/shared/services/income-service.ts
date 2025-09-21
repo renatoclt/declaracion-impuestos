@@ -2,20 +2,21 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { forkJoin, map, Observable } from 'rxjs';
 import { UserService } from './user-service';
-import { Income } from '../Interfaces/income.interface';
+import { IIncome } from '../Interfaces/income.interface';
 import { User } from '../Interfaces/user.interface';
 import { environment } from '@/app/pages/environment/environment';
 @Injectable({
     providedIn: 'root'
 })
 export class IncomeService {
-    private apiUrl = `${environment.apiUrl}/incomes`;
 
-    constructor(private http: HttpClient, private userService: UserService) { }
+    private readonly apiUrl = `${environment.apiUrl}/incomes`;
 
-    getIncomesWithUsers(): Observable<(Income & { user?: User })[]> {
+    constructor(private readonly http: HttpClient, private readonly userService: UserService) { }
+
+    getIncomesWithUsers(): Observable<(IIncome & { user?: User })[]> {
         return forkJoin({
-            incomes: this.http.get<Income[]>(this.apiUrl),
+            incomes: this.http.get<IIncome[]>(this.apiUrl),
             users: this.userService.getUser()
         }).pipe(
             map(({ incomes, users }) =>
@@ -27,20 +28,45 @@ export class IncomeService {
         );
     }
 
-    getIncomeId(id: number): Observable<Income> {
-        return this.http.get<Income>(`${this.apiUrl}/${id}`);
+    getIncomeId(id: number): Observable<IIncome> {
+        return this.http.get<IIncome>(`${this.apiUrl}/${id}`);
     }
 
-    addIncome(income: Income): Observable<Income> {
-        return this.http.post<Income>(this.apiUrl, income)
+    addIncome(income: IIncome): Observable<IIncome> {
+        return this.http.post<IIncome>(this.apiUrl, income)
     }
 
-    updateIncome(income: Income): Observable<Income> {
-        return this.http.put<Income>(`${this.apiUrl}/${income.id}`, income);
+    updateIncome(income: IIncome): Observable<IIncome> {
+        return this.http.put<IIncome>(`${this.apiUrl}/${income.id}`, income);
     }
 
     deleteIncome(id: number): Observable<any> {
         return this.http.delete(`${this.apiUrl}/${id}`);
     }
+
+    generateId(): Observable<string> {
+        return this.getIncomesWithUsers().pipe(
+            map(items => {
+                if (!items || items.length === 0) { return '100'; }
+                const ids = items.map(item => parseInt(item.id, 10)).filter(id => !isNaN(id));
+                const maxId = Math.max(...ids);
+                return (maxId + 1).toString();
+            })
+        );
+    }
+
+    generateIncomeRequest(formValue: any, userId: number): Observable<IIncome> {
+        return this.generateId().pipe(
+            map((id) => ({
+                id,
+                userId,
+                source: formValue.type,
+                amount: formValue.amount,
+                period: `${formValue.year}-${formValue.month}`,
+                description: formValue.description
+            }))
+        );
+    }
+
 
 }
