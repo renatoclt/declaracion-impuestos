@@ -95,6 +95,46 @@
       "amount": 1200,
       "period": "2025-09",
       "description": "Alquiler del departamento de Cercado de Lima"
+    },
+    {
+      "id": "207",
+      "userId": 3,
+      "source": "Honorario",
+      "amount": 1500,
+      "period": "2025-09",
+      "description": "pruebas"
+    },
+    {
+      "id": "208",
+      "userId": 3,
+      "source": "Otros",
+      "amount": 1250,
+      "period": "2025-09",
+      "description": "Venta por facebook"
+    },
+    {
+      "id": "209",
+      "userId": 3,
+      "source": "Salario",
+      "amount": 2500,
+      "period": "2025-09",
+      "description": "sueldo freelance"
+    },
+    {
+      "id": "211",
+      "userId": 3,
+      "source": "Otros",
+      "amount": 500,
+      "period": "2025-09",
+      "description": "Devolucion de prestamo"
+    },
+    {
+      "id": "212",
+      "userId": 3,
+      "source": "Alquiler",
+      "amount": 250,
+      "period": "2025-09",
+      "description": "alquiler camioneta"
     }
   ],
   "expenses": [

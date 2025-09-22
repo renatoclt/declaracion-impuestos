@@ -1,4 +1,4 @@
-import { User } from '@/app/shared/Interfaces/user.interface';
+import { User } from '@/app/shared/interfaces/user.interface';
 import { UserService } from '@/app/shared/services/user-service';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
 

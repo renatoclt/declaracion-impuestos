@@ -2,11 +2,11 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { forkJoin, map, Observable } from 'rxjs';
 import { UserService } from './user-service';
-import { User } from '../Interfaces/user.interface';
+import { User } from '../interfaces/user.interface';
 import { environment } from '@/app/pages/environment/environment';
-import { Declaration } from '../Interfaces/declaration.interface';
+import { Declaration } from '../interfaces/declaration.interface';
 import { TaxTypeService } from './taxtype-service';
-import { TaxType } from '../Interfaces/taxtype.interface';
+import { TaxType } from '../interfaces/taxtype.interface';
 @Injectable({
     providedIn: 'root'
 })

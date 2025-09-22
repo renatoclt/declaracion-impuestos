@@ -1,5 +1,5 @@
 import { MaterialModule } from '@/app/material.module';
-import { LoginCredentials } from '@/app/shared/Interfaces/login-credentials';
+import { LoginCredentials } from '@/app/shared/interfaces/login-credentials';
 import { AuthService } from '@/app/shared/services/auth-service';
 import { DocumentValidator } from '@/app/shared/validators/document-validator';
 import { CommonModule } from '@angular/common';

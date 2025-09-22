@@ -1,11 +1,11 @@
-import { TaxType } from './../../../shared/Interfaces/taxtype.interface';
+import { TaxType } from '../../../shared/interfaces/taxtype.interface';
 import { UserService } from './../../../shared/services/user-service';
 import { MaterialModule } from '@/app/material.module';
-import { Declaration } from '@/app/shared/Interfaces/declaration.interface';
-import { Expense } from '@/app/shared/Interfaces/expenses.interface';
-import { IIncome } from '@/app/shared/Interfaces/income.interface';
-import { TaxCalculation } from '@/app/shared/Interfaces/tax-calculation';
-import { User } from '@/app/shared/Interfaces/user.interface';
+import { Declaration } from '@/app/shared/interfaces/declaration.interface';
+import { Expense } from '@/app/shared/interfaces/expenses.interface';
+import { IIncome } from '@/app/shared/interfaces/income.interface';
+import { TaxCalculation } from '@/app/shared/interfaces/tax-calculation';
+import { User } from '@/app/shared/interfaces/user.interface';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';

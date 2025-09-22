@@ -4,10 +4,10 @@ import { Injectable, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, of, throwError } from 'rxjs';
 import { delay, map, catchError } from 'rxjs/operators';
-import { AuthResponse } from '../Interfaces/auth-response';
+import { AuthResponse } from '../interfaces/auth-response';
 import { UserRole } from '../enum/user-role';
-import { User } from '../Interfaces/user.interface';
-import { LoginCredentials } from '../Interfaces/login-credentials';
+import { User } from '../interfaces/user.interface';
+import { LoginCredentials } from '../interfaces/login-credentials';
 
 @Injectable({
   providedIn: 'root'

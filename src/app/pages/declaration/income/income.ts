@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatCardModule } from '@angular/material/card';
@@ -12,11 +12,11 @@ import { NumberFormatDirective } from '@/app/shared/directives/number.format';
 import { IncomeService } from '@/app/shared/services/income-service';
 import { finalize, switchMap } from 'rxjs';
 import { ToastService } from '@/app/shared/services/toast.service';
+import { Month } from '@/app/shared/interfaces/month.interface';
+import { MONTH_DATA } from '@/app/shared/data/months';
+import { YEARS_DATA } from '@/app/shared/data/years';
+import { INCOME_DATA } from '@/app/shared/data/incomes';
 
-interface Month {
-  value: string;
-  viewValue: string;
-}
 
 @Component({
   selector: 'app-income',
@@ -37,23 +37,9 @@ interface Month {
 })
 export class Income {
 
-  typesIncome = signal<string[]>(['Salario', 'Honorario', 'Alquiler', 'Otros']);
-  years = signal<string[]>(['2025', '2026', '2027', '2028', '2029', '2030']);
-  months = signal<Month[]>([
-    { value: '01', viewValue: 'Enero' },
-    { value: '02', viewValue: 'Febrero' },
-    { value: '03', viewValue: 'Marzo' },
-    { value: '04', viewValue: 'Abril' },
-    { value: '05', viewValue: 'Mayo' },
-    { value: '06', viewValue: 'Junio' },
-    { value: '07', viewValue: 'Julio' },
-    { value: '08', viewValue: 'Agosto' },
-    { value: '09', viewValue: 'Septiembre' },
-    { value: '10', viewValue: 'Octubre' },
-    { value: '11', viewValue: 'Noviembre' },
-    { value: '12', viewValue: 'Diciembre' }
-  ]);
-
+  typesIncome = signal<string[]>(INCOME_DATA);
+  years = signal<string[]>(YEARS_DATA);
+  months = signal<Month[]>(MONTH_DATA);
   dateToday = new Date();
   currentYear = String(this.dateToday.getFullYear());
   month = this.dateToday.getMonth() + 1
@@ -67,10 +53,12 @@ export class Income {
     description: new FormControl('')
   })
 
-  
+
   textButton: string = 'Guardar';
 
-  constructor(private readonly authService: AuthService, private readonly incomeService: IncomeService, private readonly toastService: ToastService) { }
+  private readonly authService: AuthService = inject(AuthService);
+  private readonly incomeService: IncomeService = inject(IncomeService);
+  private readonly toastService: ToastService = inject(ToastService);
 
   onSave(): void {
     if (this.formGroupIncome.valid) {
@@ -84,7 +72,7 @@ export class Income {
           this.formGroupIncome.enable()
         })).subscribe({
           next: () => {
-            this.formGroupIncome.reset();
+            this.formGroupIncome.reset({ year: this.currentYear, month: this.currentMonth });
             this.toastService.showSuccess('Ingreso guardado.');
           },
           error: (err) => {

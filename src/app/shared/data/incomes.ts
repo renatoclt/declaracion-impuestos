@@ -1,0 +1,1 @@
+export const INCOME_DATA = ['Salario', 'Honorario', 'Alquiler', 'Otros']

@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { forkJoin, map, Observable } from 'rxjs';
+import { delay, forkJoin, map, Observable } from 'rxjs';
 import { UserService } from './user-service';
-import { IIncome } from '../Interfaces/income.interface';
-import { User } from '../Interfaces/user.interface';
+import { IIncome } from '../interfaces/income.interface';
+import { User } from '../interfaces/user.interface';
 import { environment } from '@/app/pages/environment/environment';
 @Injectable({
     providedIn: 'root'
@@ -24,7 +24,8 @@ export class IncomeService {
                     ...income,
                     user: users.find(u => u.id === income.userId)
                 }))
-            )
+            ),
+            delay(1000)
         );
     }
 
@@ -33,15 +34,15 @@ export class IncomeService {
     }
 
     addIncome(income: IIncome): Observable<IIncome> {
-        return this.http.post<IIncome>(this.apiUrl, income)
+        return this.http.post<IIncome>(this.apiUrl, income).pipe(delay(2000));
     }
 
     updateIncome(income: IIncome): Observable<IIncome> {
-        return this.http.put<IIncome>(`${this.apiUrl}/${income.id}`, income);
+        return this.http.put<IIncome>(`${this.apiUrl}/${income.id}`, income).pipe(delay(2000));
     }
 
     deleteIncome(id: number): Observable<any> {
-        return this.http.delete(`${this.apiUrl}/${id}`);
+        return this.http.delete(`${this.apiUrl}/${id}`).pipe(delay(2000));
     }
 
     generateId(): Observable<string> {
