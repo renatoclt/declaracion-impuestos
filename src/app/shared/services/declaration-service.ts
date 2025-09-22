@@ -4,9 +4,9 @@ import { forkJoin, map, Observable } from 'rxjs';
 import { UserService } from './user-service';
 import { User } from '../interfaces/user.interface';
 import { environment } from '@/app/pages/environment/environment';
-import { Declaration } from '../interfaces/declaration.interface';
 import { TaxTypeService } from './taxtype-service';
 import { TaxType } from '../interfaces/taxtype.interface';
+import { Declaration } from '../interfaces/declaration.interface';
 @Injectable({
     providedIn: 'root'
 })

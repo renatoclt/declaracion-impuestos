@@ -4,7 +4,7 @@ import { forkJoin, map, Observable } from 'rxjs';
 import { UserService } from './user-service';
 import { User } from '../interfaces/user.interface';
 import { environment } from '@/app/pages/environment/environment';
-import { Expense } from '../interfaces/expenses.interface';
+import { Expense } from '@/app/shared/interfaces/expenses.interface';
 @Injectable({
     providedIn: 'root'
 })
