@@ -1,10 +1,5 @@
-import { TaxType } from '../../../shared/interfaces/taxtype.interface';
 import { UserService } from './../../../shared/services/user-service';
 import { MaterialModule } from '@/app/material.module';
-import { Declaration } from '@/app/shared/interfaces/declaration.interface';
-import { Expense } from '@/app/shared/interfaces/expenses.interface';
-import { IIncome } from '@/app/shared/interfaces/income.interface';
-import { TaxCalculation } from '@/app/shared/interfaces/tax-calculation';
 import { User } from '@/app/shared/interfaces/user.interface';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
@@ -16,6 +11,11 @@ import jsPDF from 'jspdf';
 import { TaxTypeService } from '@/app/shared/services/taxtype-service';
 import { IncomeService } from '@/app/shared/services/income-service';
 import { ExpenseService } from '@/app/shared/services/expense-service';
+import { TaxType } from '@/app/shared/interfaces/taxtype.interface';
+import { IIncome } from '@/app/shared/interfaces/income.interface';
+import { Expense } from '@/app/shared/interfaces/expenses.interface';
+import { TaxCalculation } from '@/app/shared/interfaces/tax-calculation';
+import { Declaration } from '@/app/shared/interfaces/declaration.interface';
 
 @Component({
   selector: 'app-calculation',
