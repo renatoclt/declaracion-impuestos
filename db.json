@@ -139,7 +139,7 @@
   ],
   "expenses": [
     {
-      "id": "301",
+      "id": "1",
       "userId": 1,
       "category": "Educación",
       "amount": 5000,
@@ -147,12 +147,52 @@
       "description": "Matrícula universitaria."
     },
     {
-      "id": "302",
+      "id": "2",
       "userId": 2,
       "category": "Salud",
       "amount": 3000,
       "period": "2025-01",
       "description": "Seguro médico."
+    },
+    {
+      "id": "3",
+      "userId": 3,
+      "period": "2025-03",
+      "amount": 950,
+      "description": "pantalon",
+      "category": "Vestimenta"
+    },
+    {
+      "id": "4",
+      "userId": 2,
+      "period": "2025-02",
+      "amount": 900,
+      "description": "bebidas",
+      "category": "Alimentación"
+    },
+    {
+      "id": "1fde",
+      "userId": 3,
+      "period": "2025-05",
+      "amount": 15000,
+      "description": "reloj",
+      "category": "Vestimenta"
+    },
+    {
+      "id": "a95d",
+      "userId": 1,
+      "period": "2025-02",
+      "amount": 2222,
+      "description": "dentista, medicina",
+      "category": "Salud"
+    },
+    {
+      "id": "3a1e",
+      "userId": 2,
+      "period": "2025-04",
+      "amount": 600,
+      "description": "agua, luz",
+      "category": "Vivienda"
     }
   ],
   "declarations": [

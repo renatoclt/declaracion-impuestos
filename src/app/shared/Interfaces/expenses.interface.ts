@@ -1,6 +1,6 @@
 export interface Expense{
-    id: number,
-    userId: number,
+    id: string|number,
+    userId: number|string,
     category: string,
     amount: number,
     period: string,

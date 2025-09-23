@@ -1,0 +1,223 @@
+<style>
+  .col-amount {
+    min-width: 140px;
+    white-space: nowrap;
+    text-align: right;
+    padding-right: 20px !important;
+  }
+
+  .col-description {
+    min-width: 320px;
+    max-width: 560px;
+    padding-left: 13% !important;
+  }
+
+  th.col-category,
+  td.col-category {
+    width: 20%;
+    text-align: center !important;
+  }
+
+  th.col-actions,
+  td.col-actions {
+    width: 220px;
+    text-align: center !important;
+  }
+
+  .actions-wrap {
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+    white-space: nowrap;
+  }
+</style>
+
+
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-12">
+
+      <!-- Formulario -->
+      <mat-card>
+
+        <mat-card-header class="bg-primary text-white rounded-top p-3 mb-4">
+          <mat-card-title class="mb-0">
+            <mat-icon class="me-2">payments</mat-icon>
+            Formulario de gastos deducibles
+          </mat-card-title>
+          <mat-card-subtitle class="text-white-50 mt-2">
+            Educación, salud, transporte, etc. con categorización automática.
+          </mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content>
+
+          @if (message()) {
+          <div class="alert mt-2" [ngClass]="{
+              'alert-success': message()?.type === 'success',
+              'alert-danger': message()?.type === 'danger',
+              'alert-info': message()?.type === 'info'
+            }">
+            {{ message()?.text }}
+          </div>
+          }
+
+          <form #f="ngForm" (ngSubmit)="onSubmit(f)" novalidate>
+            <div class="row">
+              @for (item of formConfig.items; track item.prop) {
+              <div class="{{ item.col || 'col-12' }} mt-3">
+
+                @if (item.type === 'input') {
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>{{ item.label }}</mat-label>
+
+                  <input matInput [type]="item.inputType || 'text'" [placeholder]="item.placeholder || ''"
+                    name="{{ item.prop }}" required="{{ item.required || null }}" [attr.min]="item.min ?? null"
+                    [attr.pattern]="item.pattern || null" [(ngModel)]="formModel[item.prop]"
+                    (ngModelChange)="onModelChange(item.prop, $event)" #ctrl="ngModel" />
+
+                  @if (item.prop === 'amount') {
+                  <span matTextSuffix>S/&nbsp;</span>
+                  }
+
+                  <mat-error *ngIf="ctrl.invalid && (ctrl.dirty || submitted)">
+                    @if (ctrl.errors?.['required']) { Campo requerido. }
+                    @if (ctrl.errors?.['min']) { Valor mínimo: {{ item.min }}. }
+                    @if (ctrl.errors?.['pattern']) { Formato inválido. }
+                  </mat-error>
+                </mat-form-field>
+                }
+
+                @if (item.type === 'select') {
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>{{ item.label }}</mat-label>
+
+                  <mat-select name="{{ item.prop }}" required="{{ item.required || null }}"
+                    [(ngModel)]="formModel[item.prop]" (selectionChange)="onModelChange(item.prop, $event.value)"
+                    #ctrl="ngModel">
+                    @for (opt of (item.options || []); track opt.value) {
+                    <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+                    }
+                  </mat-select>
+
+                  <mat-error *ngIf="ctrl.invalid && (ctrl.dirty || submitted)">
+                    Campo requerido.
+                  </mat-error>
+                </mat-form-field>
+                }
+
+                @if (item.type === 'switch') {
+                <mat-slide-toggle name="{{ item.prop }}" [(ngModel)]="formModel[item.prop]"
+                  (change)="onModelChange(item.prop, $event.checked)">
+                  {{ item.placeholder || item.label }}
+                </mat-slide-toggle>
+                }
+              </div>
+              }
+            </div>
+
+            <div class="col-12 mt-2">
+              <button matButton="filled" type="submit">
+                {{ editingId ? 'Actualizar' : 'Guardar' }}
+              </button>
+
+              <button matButton="tonal" type="button" class="mx-2" (click)="clearForm()">
+                Limpiar formulario
+              </button>
+
+              <div class="form-text mt-2">
+                Tip: la categoría se sugiere automáticamente según la descripción
+                (ej. “matrícula”, “clínica”, “gasolina”).
+              </div>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Tabla -->
+      <mat-card class="mt-4">
+
+        <mat-card-header class="bg-primary text-white rounded-top p-3 mb-4">
+          <mat-card-title class="mb-0">
+            <mat-icon class="me-2">list_alt</mat-icon>
+            {{ tableConfig.titulo }}
+          </mat-card-title>
+          <mat-card-subtitle class="text-white-50 mt-2">
+            Resumen de gastos registrados
+          </mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content>
+
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="fw-semibold">Total registros: {{ expenses().length }}</span>
+            @if (loading()) { <span class="text-muted small">Cargando...</span> }
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-sm align-middle">
+              <thead class="table-light">
+                <tr>
+                  @for (col of tableConfig.cabecera; track col.cabeceraData) {
+                  <th [class.text-center]="
+            col.cabeceraData === '__index' ||
+            col.cabeceraData === 'userName' ||
+            col.cabeceraData === 'period'   ||
+            col.cabeceraData === 'category'
+          " [class.col-amount]="col.cabeceraData === 'amount'"
+                    [class.col-description]="col.cabeceraData === 'description'"
+                    [class.col-category]="col.cabeceraData === 'category'">
+                    {{ col.cabecera }}
+                  </th>
+                  }
+                  <th class="col-actions">Acciones</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                @if (!expenses().length && !loading()) {
+                <tr>
+                  <td [attr.colspan]="tableConfig.cabecera.length + 1" class="text-center text-muted py-3">
+                    Sin gastos aún.
+                  </td>
+                </tr>
+                } @else {
+                @for (e of expenses(); track e.id; let i = $index) {
+                <tr>
+                  @for (col of tableConfig.cabecera; track col.cabeceraData) {
+                  <td [class.text-center]="
+                col.cabeceraData === '__index' ||
+                col.cabeceraData === 'userName' ||
+                col.cabeceraData === 'period'   ||
+                col.cabeceraData === 'category'
+              " [class.col-amount]="col.cabeceraData === 'amount'"
+                    [class.col-description]="col.cabeceraData === 'description'"
+                    [class.col-category]="col.cabeceraData === 'category'">
+                    @if (col.cabeceraData === '__index') {
+                    {{ i + 1 }}
+                    } @else if (col.cabeceraData === 'amount') {
+                    {{ e.amount | number:'1.2-2' }}
+                    } @else {
+                    {{ $any(e)[col.cabeceraData] }}
+                    }
+                  </td>
+                  }
+                  <td class="col-actions">
+                    <span class="actions-wrap">
+                      <button matButton="tonal" (click)="edit(e)">Editar</button>
+                      <button matButton="outlined" color="warn" (click)="remove(e)">Eliminar</button>
+                    </span>
+                  </td>
+                </tr>
+                }
+                }
+              </tbody>
+            </table>
+          </div>
+
+        </mat-card-content>
+      </mat-card>
+
+    </div>
+  </div>
+</div>
