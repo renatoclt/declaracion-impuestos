@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { forkJoin, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 
 interface User {
   id: number;
@@ -65,18 +64,14 @@ interface Expense {
 export class DashboardComponent implements OnInit {
   private router = inject(Router);
   private http = inject(HttpClient);
-
-  // Base URL del JSON Server
   private readonly API_URL = 'http://localhost:3000';
 
-  // Propiedades para los datos
   users: User[] = [];
   taxTypes: TaxType[] = [];
   incomes: Income[] = [];
   expenses: Expense[] = [];
   declarations: Declaration[] = [];
 
-  // Usuario actual (simulado - en producción vendría del servicio de auth)
   currentUser: User | null = null;
   allDeclarations: Declaration[] = [];
   pendingDeclarations: Declaration[] = [];
@@ -85,7 +80,6 @@ export class DashboardComponent implements OnInit {
   totalTaxesPaid = 0;
   currentPeriodIncome = 0;
 
-  // Estados de carga
   isLoading = true;
   hasError = false;
   errorMessage = '';
@@ -98,7 +92,6 @@ export class DashboardComponent implements OnInit {
     this.isLoading = true;
     this.hasError = false;
 
-    // Cargar todos los datos en paralelo
     const requests = {
       users: this.getUsers(),
       taxTypes: this.getTaxTypes(),
@@ -115,22 +108,19 @@ export class DashboardComponent implements OnInit {
         this.expenses = data.expenses;
         this.declarations = data.declarations;
 
-        // Simular usuario logueado (primer usuario por defecto)
         this.currentUser = this.users[0] || null;
 
         this.processDashboardData();
         this.isLoading = false;
       },
       error: (error) => {
-        console.error('Error al cargar datos del dashboard:', error);
         this.hasError = true;
-        this.errorMessage = 'Error al cargar los datos. Asegúrate de que el JSON Server esté ejecutándose.';
+        this.errorMessage = 'Error al cargar los datos. Verifique que el servidor esté ejecutándose.';
         this.isLoading = false;
       }
     });
   }
 
-  // Métodos para obtener datos de la API
   private getUsers(): Observable<User[]> {
     return this.http.get<User[]>(`${this.API_URL}/users`);
   }
@@ -151,12 +141,10 @@ export class DashboardComponent implements OnInit {
     return this.http.get<Declaration[]>(`${this.API_URL}/declarations`);
   }
 
-  // Obtener declaraciones por usuario
   private getDeclarationsByUserId(userId: number): Observable<Declaration[]> {
     return this.http.get<Declaration[]>(`${this.API_URL}/declarations?userId=${userId}`);
   }
 
-  // Obtener ingresos por usuario y período
   private getIncomesByUserAndPeriod(userId: number, period: string): Observable<Income[]> {
     return this.http.get<Income[]>(`${this.API_URL}/incomes?userId=${userId}&period=${period}`);
   }
@@ -164,22 +152,17 @@ export class DashboardComponent implements OnInit {
   private processDashboardData() {
     if (!this.currentUser) return;
 
-    // Filtrar declaraciones del usuario actual
     this.allDeclarations = this.declarations.filter(d => d.userId === this.currentUser!.id);
 
-    // Separar por estado
     this.pendingDeclarations = this.allDeclarations.filter(d => d.status === 'pending');
     this.completedDeclarations = this.allDeclarations.filter(d => d.status === 'completed');
 
-    // Mostrar las más recientes en el historial (máximo 5)
     this.recentDeclarations = [...this.allDeclarations]
       .sort((a, b) => new Date(b.period).getTime() - new Date(a.period).getTime())
       .slice(0, 5);
 
-    // Calcular totales
     this.totalTaxesPaid = this.completedDeclarations.reduce((sum, d) => sum + d.taxAmount, 0);
 
-    // Ingresos del período actual
     const currentPeriod = "2025-01";
     this.currentPeriodIncome = this.incomes
       .filter(i => i.userId === this.currentUser!.id && i.period === currentPeriod)
@@ -209,7 +192,6 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  // Métodos de navegación
   createNewDeclaration() {
     this.router.navigate(['/declarations/new']);
   }
@@ -235,22 +217,21 @@ export class DashboardComponent implements OnInit {
   }
 
   downloadReports() {
-    // Implementar descarga de reportes
-    console.log('Descargando reportes...');
-    // Podrías hacer una llamada a un endpoint para generar reportes
-    // this.http.get(`${this.API_URL}/reports/generate/${this.currentUser?.id}`).subscribe(...)
+    alert('Funcionalidad de descarga de reportes en desarrollo');
   }
 
   downloadReceipt(url: string) {
-    window.open(url, '_blank');
+    if (url) {
+      window.open(url, '_blank');
+    } else {
+      alert('No hay comprobante disponible');
+    }
   }
 
-  // Método para refrescar los datos
   refreshData() {
     this.loadDashboardData();
   }
 
-  // Método para cambiar de usuario (útil para testing)
   switchUser(userId: number) {
     const user = this.users.find(u => u.id === userId);
     if (user) {
@@ -259,19 +240,14 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  // Métodos adicionales para operaciones CRUD si necesitas
-
-  // Crear nueva declaración
   createDeclaration(declaration: Omit<Declaration, 'id'>): Observable<Declaration> {
     return this.http.post<Declaration>(`${this.API_URL}/declarations`, declaration);
   }
 
-  // Actualizar declaración
   updateDeclaration(id: number, declaration: Partial<Declaration>): Observable<Declaration> {
     return this.http.patch<Declaration>(`${this.API_URL}/declarations/${id}`, declaration);
   }
 
-  // Eliminar declaración
   deleteDeclaration(id: number): Observable<void> {
     return this.http.delete<void>(`${this.API_URL}/declarations/${id}`);
   }
