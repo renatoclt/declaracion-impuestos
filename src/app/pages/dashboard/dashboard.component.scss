@@ -1,0 +1,147 @@
+// Bordes de colores para las cards
+.border-left-primary {
+  border-left: 0.25rem solid #4e73df !important;
+}
+
+.border-left-success {
+  border-left: 0.25rem solid #1cc88a !important;
+}
+
+.border-left-info {
+  border-left: 0.25rem solid #36b9cc !important;
+}
+
+.border-left-warning {
+  border-left: 0.25rem solid #f6c23e !important;
+}
+
+// Estilo de cards con sombra
+.card {
+  box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15) !important;
+  border: 1px solid #e3e6f0;
+}
+
+// Tamaños de texto
+.text-xs {
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+// Colores de texto
+.text-gray-300 {
+  color: #dddfeb !important;
+}
+
+.text-gray-800 {
+  color: #5a5c69 !important;
+}
+
+// Estilos para los headers de las cards
+.card-header {
+  background-color: #f8f9fc;
+  border-bottom: 1px solid #e3e6f0;
+  padding: 0.75rem 1.25rem;
+
+  h6 {
+    margin-bottom: 0;
+    color: #5a5c69;
+  }
+}
+
+// Estilos para las tablas
+.table {
+  th {
+    border-top: none;
+    font-weight: 600;
+    background-color: #f8f9fc;
+    color: #5a5c69;
+    border-bottom: 1px solid #e3e6f0;
+    font-size: 0.875rem;
+  }
+
+  td {
+    font-size: 0.875rem;
+    vertical-align: middle;
+  }
+}
+
+// Botones
+.btn {
+  font-weight: 600;
+  border-radius: 0.35rem;
+
+  &.btn-lg {
+    padding: 0.75rem 1.5rem;
+    font-size: 1.125rem;
+  }
+
+  &.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+  }
+}
+
+// Badges
+.badge {
+  font-size: 0.75em;
+  font-weight: 700;
+  padding: 0.35em 0.65em;
+  border-radius: 0.375rem;
+}
+
+// Espaciado
+.gap-2 {
+  gap: 0.5rem;
+}
+
+// Alertas
+.alert {
+  border: 1px solid transparent;
+  border-radius: 0.375rem;
+  padding: 0.75rem 1.25rem;
+  margin-bottom: 1rem;
+
+  &.alert-warning {
+    color: #856404;
+    background-color: #fff3cd;
+    border-color: #ffeaa7;
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .container-fluid {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .table-responsive {
+    font-size: 0.8rem;
+  }
+
+  .btn-lg {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+  }
+
+  .card-body {
+    padding: 1rem;
+  }
+}
+
+// Animaciones hover
+.card {
+  transition: transform 0.15s ease-in-out;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+.btn {
+  transition: all 0.15s ease-in-out;
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+}

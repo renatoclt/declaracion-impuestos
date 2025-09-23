@@ -3,11 +3,16 @@ import { Login } from './pages/login/login';
 import { AdminDashboard } from './pages/admin-dashboard/admin-dashboard';
 import { UserDashboard } from './pages/user-dashboard/user-dashboard';
 import { authGuard } from './shared/guard/auth.guard';
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
 
 export const routes: Routes = [
   {
     path: 'login',
     component: Login
+  },
+  { path: 'dashboard',
+    component: DashboardComponent,
+    canActivate: [authGuard]
   },
   {
     path: 'admin-dashboard',
@@ -22,7 +27,7 @@ export const routes: Routes = [
   {
     path: 'declaration',
     loadChildren: () => import('./pages/declaration/declaration.routes').then(m => m.declaration),
-    canActivate: [authGuard]
+    // canActivate: [authGuard]
   },
   {
     path: '**',
