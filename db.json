@@ -1,28 +1,6 @@
 {
   "users": [
     {
-      "id": "1",
-      "username": "edwin",
-      "password": "123456",
-      "name": "Edwin Fidel",
-      "email": "edwin@example.com",
-      "role": "taxpayer",
-      "documentType": "DNI",
-      "documentNumber": "71234567",
-      "address": "Av. Principal 123, Lima"
-    },
-    {
-      "id": "2",
-      "username": "ana",
-      "password": "654321",
-      "name": "Ana Torres",
-      "email": "ana@example.com",
-      "role": "taxpayer",
-      "documentType": "RUC",
-      "documentNumber": "20123456789",
-      "address": "Calle Secundaria 456, Arequipa"
-    },
-    {
       "id": "3",
       "username": "admin",
       "password": "admin123",
@@ -31,6 +9,28 @@
       "role": "admin",
       "documentType": "DNI",
       "documentNumber": "87654321"
+    },
+    {
+      "id": "4",
+      "name": "Luis Simon Martinez",
+      "username": "lsimon",
+      "password": "martinez123",
+      "documentType": "DNI",
+      "documentNumber": 78965432,
+      "email": "simonmartinez.luis@gmail.com",
+      "address": "Jr. Elias Mabama 121",
+      "role": "taxpayer"
+    },
+    {
+      "id": "5",
+      "name": "Ana Torres Delgado",
+      "username": "atorres",
+      "password": "Ana123Torres",
+      "documentType": "DNI",
+      "documentNumber": 87651230,
+      "email": "ana.torres@gmail.com",
+      "address": "Av. Precursores 1050",
+      "role": "taxpayer"
     }
   ],
   "taxTypes": [

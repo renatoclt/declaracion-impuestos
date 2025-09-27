@@ -12,13 +12,13 @@ export const authGuard: CanActivateFn = (route, state) => {
         return false;
     }
 
-    if (role === 'admin' && state.url !== '/dashboard') {
-        router.navigate(['/dashboard']);
+    if (role === 'admin' && state.url !== '/admin-dashboard') {
+        router.navigate(['/admin-dashboard']);
         return false;
     }
 
-    if (role === 'taxpayer' && state.url !== '/user-dashboard') {
-        router.navigate(['/user-dashboard']);
+    if (role === 'taxpayer' && state.url !== '/dashboard') {
+        router.navigate(['/dashboard']);
         return false;
     }
 

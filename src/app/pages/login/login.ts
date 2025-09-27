@@ -70,7 +70,6 @@ export class Login {
               duration: 3000,
               panelClass: ['success-snackbar']
             });
-            console.log(response.role);
             this.authService.redirectByRole(response.role);
           }
         },

@@ -1,0 +1,22 @@
+.hide-mobile {
+    /* By default show elements. They'll be hidden on small screens via media query. */
+    display: table-cell;
+}
+
+/* Hide columns on screens smaller than Bootstrap's sm breakpoint (576px). Adjust if your project uses a different breakpoint. */
+@media (max-width: 575.98px) {
+    /* table headers and cells with .hide-mobile will be hidden on mobile */
+    .hide-mobile {
+        display: none !important;
+    }
+}
+
+.btn-custom {
+    background-color: #0E6EFD !important;
+}
+
+/* Show a red border and slight shadow for inputs marked with .error-input */
+.error-input {
+    border: 1px solid #dc3545 !important; /* Bootstrap danger color */
+    box-shadow: 0 0 0 0.2rem rgba(220,53,69,0.25);
+}

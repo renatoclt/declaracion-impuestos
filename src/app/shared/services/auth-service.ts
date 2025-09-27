@@ -67,6 +67,7 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.ROLE_KEY);
+    localStorage.removeItem(this.USER_ID);
     this.isAuthenticated.set(false);
     this.router.navigate(['/login']);
   }
@@ -85,6 +86,7 @@ export class AuthService {
   }
 
   redirectByRole(role: UserRole): void {
+    
     const routes = {
       admin: '/admin-dashboard',
       taxpayer: '/user-dashboard'

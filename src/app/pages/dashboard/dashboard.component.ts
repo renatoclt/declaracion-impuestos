@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { forkJoin, Observable } from 'rxjs';
+import { AuthService } from '@/app/shared/services/auth-service';
 
 interface User {
   id: number;
@@ -62,8 +63,10 @@ interface Expense {
   styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
-  private router = inject(Router);
-  private http = inject(HttpClient);
+
+  private readonly router = inject(Router);
+  private readonly http = inject(HttpClient);
+  private readonly authService = inject(AuthService);
   private readonly API_URL = 'http://localhost:3000';
 
   users: User[] = [];
@@ -250,5 +253,9 @@ export class DashboardComponent implements OnInit {
 
   deleteDeclaration(id: number): Observable<void> {
     return this.http.delete<void>(`${this.API_URL}/declarations/${id}`);
+  }
+
+  logout() {
+    this.authService.logout();
   }
 }

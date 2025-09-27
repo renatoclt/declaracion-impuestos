@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { delay, Observable } from 'rxjs';
 import { User } from '../interfaces/user.interface';
 import { environment } from '@/app/pages/environment/environment';
 @Injectable({
@@ -8,25 +8,25 @@ import { environment } from '@/app/pages/environment/environment';
 })
 export class UserService {
   private apiUrl = `${environment.apiUrl}/users`;
-  constructor(private http: HttpClient){}
-  getUser():Observable<User[]>{
+  constructor(private http: HttpClient) { }
+  getUser(): Observable<User[]> {
     return this.http.get<User[]>(this.apiUrl);
   }
 
-   getUserById(id:number):Observable<User>{
-      return this.http.get<User>(`${this.apiUrl}/${id}`);
-    }
+  getUserById(id: number): Observable<User> {
+    return this.http.get<User>(`${this.apiUrl}/${id}`);
+  }
 
-    addUser(user: User):Observable<User>{
-        return this.http.post<User>(this.apiUrl,user)
-    }
+  addUser(user: User): Observable<User> {
+    return this.http.post<User>(this.apiUrl, user).pipe(delay(2000));
+  }
 
-    updateUser(user: User):Observable<User>{
-      return this.http.put<User>(`${this.apiUrl}/${user.id}`, user);
-    }
+  updateUser(user: User): Observable<User> {
+    return this.http.put<User>(`${this.apiUrl}/${user.id}`, user).pipe(delay(2000));
+  }
 
-    deleteUser(id:number):Observable<any>{
-      return  this.http.delete(`${this.apiUrl}/${id}`);
-    }
-  
+  deleteUser(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`).pipe(delay(2000));
+  }
+
 }

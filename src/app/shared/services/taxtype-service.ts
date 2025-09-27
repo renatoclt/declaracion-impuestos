@@ -9,26 +9,26 @@ import { environment } from '@/app/pages/environment/environment';
 export class TaxTypeService {
   private apiUrl = `${environment.apiUrl}/taxTypes`;
 
-  constructor(private http: HttpClient){}
+  constructor(private http: HttpClient) { }
 
-  getTaxType():Observable<TaxType[]>{
+  getTaxType(): Observable<TaxType[]> {
     return this.http.get<TaxType[]>(this.apiUrl);
   }
 
-   getTaxTypeById(id:number):Observable<TaxType>{
-      return this.http.get<TaxType>(`${this.apiUrl}/${id}`);
-    }
+  getTaxTypeById(id: number): Observable<TaxType> {
+    return this.http.get<TaxType>(`${this.apiUrl}/${id}`);
+  }
 
-    addTaxType(taxtype: TaxType):Observable<TaxType>{
-        return this.http.post<TaxType>(this.apiUrl,taxtype)
-    }
+  addTaxType(taxtype: TaxType): Observable<TaxType> {
+    return this.http.post<TaxType>(this.apiUrl, taxtype)
+  }
 
-    updateTaxType(taxtype: TaxType):Observable<TaxType>{
-      return this.http.put<TaxType>(`${this.apiUrl}/${taxtype.id}`, taxtype);
-    }
+  updateTaxType(taxtype: TaxType): Observable<TaxType> {
+    return this.http.put<TaxType>(`${this.apiUrl}/${taxtype.id}`, taxtype);
+  }
 
-    deleteTaxType(id:number):Observable<any>{
-      return  this.http.delete(`${this.apiUrl}/${id}`);
-    }
-  
+  deleteTaxType(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`);
+  }
+
 }

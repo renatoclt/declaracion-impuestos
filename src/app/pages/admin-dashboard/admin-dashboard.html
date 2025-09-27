@@ -1,1 +1,196 @@
-<p>admin-dashboard works!</p>
+<nav class="navbar navbar-dark bg-primary">
+    <div class="container">
+        <div class="d-flex flex-column">
+            <a class="navbar-brand" href="#">Panel de Administración</a>
+            <span class="text-white">
+                <i class="fas fa-user"></i>
+                <span class="mx-2">Bienvenido {{user()?.name}}</span>
+            </span>
+        </div>
+        <button class="btn btn-outline-light" (click)="logout()">
+            <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+        </button>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <div class="row">
+        @for (item of allTaxtType(); track $index) {
+            <div class="col-4 my-3">
+                <div class="card border-left-primary shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">{{item.name}}</div>
+                                <p>{{item.description}}</p>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">Valor: {{item.rate}}</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-bank fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        <div class="col-4 my-3">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col-12 mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Reportes de declaraciones</div>
+                        </div>
+                        <div class="mb-2 col-6">
+                            <select class="form-select" id="documentType" >
+                                @for (item of months(); track $index) {
+                                    <option [value]="item.value">{{item.viewValue}}</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="mb-2 col-6">
+                            <select class="form-select" id="documentType" >
+                                @for (item of years(); track $index) {
+                                    <option [value]="item">{{item}}</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="text-center">
+                            <button class="btn btn-primary w-50">Descargar Reporte</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>     
+                            
+    <button type="button" class="btn btn-primary mb-4" (click)="action('Nuevo')"> 
+        <i class="fas fa-plus me-2"></i> Registrar Contribuyente
+    </button>
+
+    <table class="table">
+        <thead>
+            <tr>
+                @for (item of displayedColumns(); track $index) {
+                    <th scope="col" class="bg-primary text-white {{ $index === 1 || $index === 4 || $index === 5 ? 'hide-mobile' : ''}}">{{item}}</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @if (usersTaxypayers().length > 0) {
+                @for (item of usersTaxypayers(); track $index) {
+                    <tr>
+                        <td>{{item.name}}</td>
+                        <td class="hide-mobile">{{item.username}}</td>
+                        <td>{{item.documentType}}</td>
+                        <td>{{item.documentNumber}}</td>
+                        <td class="hide-mobile">{{item.email}}</td>
+                        <td class="hide-mobile">{{item.address}}</td>
+                        <td>
+                            <button class="btn btn-sm btn-warning me-2" matTooltip="Editar Contribuyente" (click)="action('Editar',item.id)">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger" matTooltip="Eliminar Contribuyente" (click)="deleteTaxtPayer(item.id)">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    </tr>
+                }
+            } @else {
+                <tr>
+                    <td colspan="7" class="text-center">No hay usuarios disponibles.</td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+
+</div>
+
+<div class="modal fade" id="modalForm" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body row" [formGroup]="formGroupUser">
+                <div class="modal-header mb-2">
+                    <h5 class="modal-title" id="exampleModalLabel">{{titleModal()}} Contribuyente</h5>
+                    <button type="button" class="btn-close" aria-label="Close" (click)="closeModal()"></button>
+                </div>
+                @if (errorService()) {
+                    <div class="alert alert-danger col-12">Ocurrió un error al registrar el contribuyente</div>
+                }
+                <div class="mb-2 col-7">
+                    <label for="name" class="form-label">Nombre y Apellido *</label>
+                    <input type="text" class="form-control mb-1" id="name" formControlName="name" placeholder="Ingrese nombre y apellido"
+                        [ngClass]="{'error-input': formGroupUser.controls['name'].invalid && formGroupUser.controls['name'].touched}" >
+                </div>
+                <div class="mb-2 col-5">
+                    <label for="user" class="form-label">Usuario  *</label>
+                    <input type="text" class="form-control mb-2" id="user" formControlName="username" placeholder="Ingrese un usuario"
+                        [ngClass]="{'error-input': formGroupUser.controls['username'].invalid && formGroupUser.controls['username'].touched}">
+                </div>
+                <div class="mb-2 col-10">
+                    <label for="pass" class="form-label">Contraseña  *</label>
+                    <input [type]="typeInputPass()" class="form-control mb-2" id="pass" formControlName="password" placeholder="Ingrese una contraseña"
+                        [ngClass]="{'error-input': formGroupUser.controls['password'].invalid && formGroupUser.controls['password'].touched}">  
+                </div>
+                <div class="col-2">
+                    <button class="btn btn-outline-secondary mt-4" (click)="changeTypePass()">
+                        <i [class]="typeInputPass()=='password'?'fas fa-eye':'fas fa-eye-slash'" (click)="changeTypePass()"></i>
+                    </button>
+                </div>
+                <div class="mb-2 col-4">
+                    <label for="documentType" class="form-label">Tipo de Documento  *</label>
+                    <select class="form-select" id="documentType" formControlName="documentType">
+                        <option value="DNI" selected>DNI</option>
+                        <option value="RUC">RUC</option>
+                    </select>
+                </div>
+                <div class="mb-2 col-8">
+                    <label for="documentNumber" class="form-label">Número de Documento  *</label>
+                    <input type="number" class="form-control mb-2" id="documentNumber" formControlName="documentNumber" placeholder="Ingrese un número de documento"
+                        [ngClass]="{'error-input': formGroupUser.controls['documentNumber'].invalid && formGroupUser.controls['documentNumber'].touched}">
+                </div>
+                <div class="mb-2 col-12">
+                    <label for="email" class="form-label">Correo Electrónico  *</label>
+                    <input type="email" class="form-control mb-2" id="email" formControlName="email" placeholder="Ingrese un correo electrónico"
+                        [ngClass]="{'error-input': formGroupUser.controls['email'].invalid && formGroupUser.controls['email'].touched}">
+                </div>
+                <div class="mb-2 col-12">
+                    <label for="address" class="form-label">Dirección  *</label>
+                    <input type="text" class="form-control mb-2" id="address" formControlName="address" placeholder="Ingrese una dirección"
+                        [ngClass]="{'error-input': formGroupUser.controls['address'].invalid && formGroupUser.controls['address'].touched}">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" (click)="closeModal(); clearForm()">Cancelar</button>
+                    <button type="button" class="btn btn-primary" (click)="onAction()" [disabled]="formGroupUser.invalid || textButton() == 'Registrando' || textButton() == 'Actualizando'">
+                        {{textButton()}}
+                        @if (textButton() == 'Registrando'){
+                            <div class="spinner-border spinner-border-sm"></div>
+                        }
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (successService()) {
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1080;">
+        <div class="toast align-items-center text-bg-dark border-2 show" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">{{message()}}</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" (click)="hideSuccessToast()" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+}
+
+@if (errorCallService()) {
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1080;">
+        <div class="toast align-items-center text-bg-danger border-2 show" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">Ocurrió un error en la operación.</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" (click)="hideSuccessToast()" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+}
