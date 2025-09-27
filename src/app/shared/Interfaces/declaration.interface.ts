@@ -1,4 +1,4 @@
-export interface Declaration{
+export interface Declaration {
     id?: number,
     userId: number,
     period: string,
@@ -6,7 +6,7 @@ export interface Declaration{
     totalExpenses: number,
     taxableIncome: number,
     taxAmount: number,
-    status: string,
+    status: 'pending' | 'completed',
     taxTypeId: number,
-    // receiptUrl: string TODO Luego utilizarlo
+    receiptUrl?: string,
 }

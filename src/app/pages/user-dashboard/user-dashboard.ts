@@ -17,7 +17,6 @@ export class UserDashboard {
       data => {
         this.users = data;
         this.cdr.markForCheck(); 
-        console.log(this.users);
       }
     );
   }

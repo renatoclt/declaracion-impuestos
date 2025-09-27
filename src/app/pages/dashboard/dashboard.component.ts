@@ -208,7 +208,19 @@ export class DashboardComponent implements OnInit {
   }
 
   viewIncomes() {
-    this.router.navigate(['/incomes']);
+    this.router.navigate(['/declaration/income']);
+  }
+
+  onDeclarationIncome() {
+    this.router.navigate(['/declaration/income']);
+  }
+
+  onDeclarationExpense() {
+    this.router.navigate(['/declaration/expense']);
+  }
+
+  onCalculation() {
+    this.router.navigate(['/declaration/calculation']);
   }
 
   viewExpenses() {

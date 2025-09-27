@@ -16,6 +16,7 @@ import { IIncome } from '@/app/shared/interfaces/income.interface';
 import { Expense } from '@/app/shared/interfaces/expenses.interface';
 import { TaxCalculation } from '@/app/shared/interfaces/tax-calculation';
 import { Declaration } from '@/app/shared/interfaces/declaration.interface';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-calculation',
@@ -34,7 +35,7 @@ export class Calculation {
   private taxTypeService = inject(TaxTypeService);
   private incomeService = inject(IncomeService);
   private expenseService = inject(ExpenseService);
-
+  private readonly router = inject(Router);
 
   // Signals para manejo de estado
   isLoading = signal(false);
@@ -266,4 +267,9 @@ export class Calculation {
     this.taxCalculation.set(null);
     this.errorMessage.set(null);
   }
+
+  back() {
+    this.router.navigate(['/dashboard'])
+  }
+
 }

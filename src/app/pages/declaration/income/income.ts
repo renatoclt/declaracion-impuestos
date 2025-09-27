@@ -16,6 +16,7 @@ import { Month } from '@/app/shared/interfaces/month.interface';
 import { MONTH_DATA } from '@/app/shared/data/months';
 import { YEARS_DATA } from '@/app/shared/data/years';
 import { INCOME_DATA } from '@/app/shared/data/incomes';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -44,7 +45,7 @@ export class Income {
   currentYear = String(this.dateToday.getFullYear());
   month = this.dateToday.getMonth() + 1
   currentMonth = this.month < 10 ? '0' + this.month : String(this.month);
-
+  private readonly router = inject(Router);
   formGroupIncome: FormGroup = new FormGroup({
     type: new FormControl(null),
     amount: new FormControl(null, [Validators.required, Validators.min(0)]),
@@ -82,5 +83,7 @@ export class Income {
         });
     }
   }
-
+  back() {
+    this.router.navigate(['/dashboard'])
+  }
 }

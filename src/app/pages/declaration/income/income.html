@@ -65,6 +65,7 @@
                         <div class="col-12 mt-2">
                             <button matButton="filled" (click)="onSave()" [disabled]="textButton=='Guardando...'">{{textButton}}</button>
                             <button matButton="tonal" class="mx-2" (click)="formGroupIncome.reset({year:currentYear,month:currentMonth })" [disabled]="textButton=='Guardando...'">Limpiar Formulario</button>
+                            <button matButton="tonal" class="mx-2" (click)="back()" [disabled]="textButton=='Guardando...'">Volver</button>
                         </div>
                     </div>
                 </mat-card-content>

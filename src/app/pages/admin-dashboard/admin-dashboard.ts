@@ -14,6 +14,9 @@ import { TaxType } from '@/app/shared/interfaces/taxtype.interface';
 import { MONTH_DATA } from '@/app/shared/data/months';
 import { Month } from '@/app/shared/interfaces/month.interface';
 import { YEARS_DATA } from '@/app/shared/data/years';
+import { DeclarationService } from '@/app/shared/services/declaration-service';
+import { PeriodReport, TaxReportService } from '@/app/shared/util/report.declarations';
+import { ReportDeclarations } from '@/app/shared/services/report-declarations';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -34,6 +37,8 @@ export class AdminDashboard implements OnInit {
   private readonly authService: AuthService = inject(AuthService);
   private readonly userService: UserService = inject(UserService);
   private readonly taxTypeService: TaxTypeService = inject(TaxTypeService);
+  private readonly declarationService: DeclarationService = inject(DeclarationService);
+  private readonly reportDeclaration: ReportDeclarations = inject(ReportDeclarations);
 
   usersTaxypayers: WritableSignal<User[]> = signal([]);
   allUsers: WritableSignal<User[]> = signal([]);
@@ -60,7 +65,15 @@ export class AdminDashboard implements OnInit {
   typeInputPass: WritableSignal<string> = signal('password');
   months = signal<Month[]>(MONTH_DATA);
   years = signal<string[]>(YEARS_DATA);
-  
+  dateToday = new Date();
+  currentYear = String(this.dateToday.getFullYear());
+  month = this.dateToday.getMonth() + 1
+  currentMonth = this.month < 10 ? '0' + this.month : String(this.month);
+  formGroupReport: FormGroup = new FormGroup({
+    year: new FormControl(this.currentYear),
+    month: new FormControl(this.currentMonth),
+  })
+
   constructor(private readonly cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
@@ -261,6 +274,23 @@ export class AdminDashboard implements OnInit {
     setTimeout(() => {
       this.successService.set(false);
     }, 5000);
+  }
+
+  downloadReport() {
+    const year = this.formGroupReport.value.year;
+    const month = this.formGroupReport.value.month;
+    this.declarationService.getDeclarationsWithUsersAndTaxType().subscribe({
+      next: (data) => {
+        const report: PeriodReport = TaxReportService.getReportByPeriod(data, year, month);
+        this.reportDeclaration.generatePeriodReportPDF(report);
+      },
+      error: () => {
+        this.errorCallService.set(true);
+        setTimeout(() => {
+          this.errorCallService.set(false);
+        }, 5000);
+      }
+    });
   }
 
 }

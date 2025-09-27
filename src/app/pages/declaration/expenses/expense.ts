@@ -5,7 +5,7 @@ import { User } from "@/app/shared/interfaces/user.interface";
 import { ExpenseService } from "@/app/shared/services/expense-service";
 import { UserService } from "@/app/shared/services/user-service";
 import { CommonModule } from "@angular/common";
-import { Component, OnInit, signal, WritableSignal } from "@angular/core";
+import { Component, inject, OnInit, signal, WritableSignal } from "@angular/core";
 import { FormsModule, NgForm } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
 import { MatCardModule } from "@angular/material/card";
@@ -14,6 +14,7 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatInputModule } from "@angular/material/input";
 import { MatSelectModule } from "@angular/material/select";
 import { MatSlideToggleModule } from "@angular/material/slide-toggle";
+import { Router } from "@angular/router";
 import Swal from 'sweetalert2';
 
 @Component({
@@ -37,7 +38,7 @@ export class ExpenseComponent implements OnInit {
 
   users: WritableSignal<User[]> = signal([]);
   expenses: WritableSignal<(Expense & { userName?: string })[]> = signal([]);
-
+  private readonly router = inject(Router);
   loading = signal(false);
   message = signal<{ type: 'success' | 'danger' | 'info', text: string } | null>(null);
 
@@ -46,7 +47,7 @@ export class ExpenseComponent implements OnInit {
     setTimeout(() => this.message.set(null), 2500);
   }
 
-editingId: string | number | null = null;
+  editingId: string | number | null = null;
 
   submitted = false;
 
@@ -62,16 +63,16 @@ editingId: string | number | null = null;
         required: true,
         col: 'col-12 col-md-4',
         inputType: 'text',
-        options: [] 
+        options: []
       },
       {
         label: 'Periodo',
         prop: 'period',
         type: 'input',
         required: true,
-        inputType: 'text', 
+        inputType: 'text',
         placeholder: 'YYYY-MM (ej. 2025-01)',
-        pattern: '^\\d{4}-(0[1-9]|1[0-2])$', 
+        pattern: '^\\d{4}-(0[1-9]|1[0-2])$',
         col: 'col-6 col-md-3'
       },
       {
@@ -130,52 +131,52 @@ editingId: string | number | null = null;
   constructor(private readonly expenseService: ExpenseService, private readonly userService: UserService) { }
 
 
- ngOnInit(): void {
-  //cargar usuarios y después gastos
-  this.loadUsersThenExpenses();
-}
+  ngOnInit(): void {
+    //cargar usuarios y después gastos
+    this.loadUsersThenExpenses();
+  }
 
-// Carga usuarios y despues carga gastos
-private loadUsersThenExpenses(): void {
-  this.userService.getUser().subscribe({
-    next: (users) => {
-      this.users.set(users);
+  // Carga usuarios y despues carga gastos
+  private loadUsersThenExpenses(): void {
+    this.userService.getUser().subscribe({
+      next: (users) => {
+        this.users.set(users);
 
-      // Se llena el Contribuyente
-      const userItem = this.formConfig.items.find(i => i.prop === 'userId');
-      if (userItem) {
-        userItem.options = users.map(u => ({
-          value: Number(u.id),
-          label: `${u.name} (${u.documentType}: ${u.documentNumber || '—'})`
+        // Se llena el Contribuyente
+        const userItem = this.formConfig.items.find(i => i.prop === 'userId');
+        if (userItem) {
+          userItem.options = users.map(u => ({
+            value: Number(u.id),
+            label: `${u.name} (${u.documentType}: ${u.documentNumber || '—'})`
+          }));
+        }
+        this.formModel = { userId: users[0]?.id ?? null, category: 'Otros' };
+        this.loadExpenses();
+      },
+      error: () => this.flash('danger', 'No se pudieron cargar los usuarios.')
+    });
+  }
+
+  private loadExpenses(): void {
+    this.loading.set(true);
+    this.expenseService.getExpensesWithUsers().subscribe({
+      next: (data) => {
+        const users = this.users();
+        const vm = data.map(e => ({
+          ...e,
+          userName: e.user?.name
+            ?? users.find(u => Number(u.id) === Number(e.userId))?.name
+            ?? `ID ${e.userId}`
         }));
+        this.expenses.set(vm);
+        this.loading.set(false);
+      },
+      error: () => {
+        this.loading.set(false);
+        this.flash('danger', 'No se pudieron cargar los gastos.');
       }
-      this.formModel = { userId: users[0]?.id ?? null, category: 'Otros' };
-      this.loadExpenses();
-    },
-    error: () => this.flash('danger', 'No se pudieron cargar los usuarios.')
-  });
-}
-
-private loadExpenses(): void {
-  this.loading.set(true);
-  this.expenseService.getExpensesWithUsers().subscribe({
-    next: (data) => {
-      const users = this.users();
-      const vm = data.map(e => ({
-        ...e,
-        userName: e.user?.name
-               ?? users.find(u => Number(u.id) === Number(e.userId))?.name
-               ?? `ID ${e.userId}`
-      }));
-      this.expenses.set(vm);
-      this.loading.set(false);
-    },
-    error: () => {
-      this.loading.set(false);
-      this.flash('danger', 'No se pudieron cargar los gastos.');
-    }
-  });
-}
+    });
+  }
 
 
   onModelChange(prop: string, value: any): void {
@@ -282,5 +283,8 @@ private loadExpenses(): void {
     this.formModel = { userId: firstUserId, category: 'Otros' };
   }
 
+  back() {
+    this.router.navigate(['/dashboard'])
+  }
 
 }
