@@ -223,8 +223,12 @@ export class DashboardComponent implements OnInit {
     this.router.navigate(['/declaration/calculation']);
   }
 
+  onHistory() {
+    this.router.navigate(['/declaration/history']);
+  }
+
   viewExpenses() {
-    this.router.navigate(['/expenses']);
+    this.router.navigate(['declaration/expense']);
   }
 
   viewAllHistory() {

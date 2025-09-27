@@ -146,6 +146,22 @@
       "amount": 250,
       "period": "2025-09",
       "description": "alquiler camioneta"
+    },
+    {
+      "id": "213",
+      "userId": 4,
+      "source": "Salario",
+      "amount": 4000,
+      "period": "2025-09",
+      "description": "pago mensual"
+    },
+    {
+      "id": "214",
+      "userId": 4,
+      "source": "Honorario",
+      "amount": 4000,
+      "period": "2025-09",
+      "description": "sueldo mensual "
     }
   ],
   "expenses": [

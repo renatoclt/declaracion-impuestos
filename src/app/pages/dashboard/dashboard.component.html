@@ -31,9 +31,10 @@
           }}</span></span>
     </div>
     <div class="d-flex text-white px-10">
-      <span class="mx-2 fs-6 text-uppercase option" (click)="onDeclarationIncome()">Declarar ingreso</span>
-      <span class="mx-2 fs-6 text-uppercase option" (click)="onDeclarationExpense()" >Declarar egreso</span>
-      <span class="mx-2 fs-6 text-uppercase option" (click)="onCalculation()" >Calcular</span>
+      <span class="mx-2 fs-6 text-uppercase option" (click)="onDeclarationIncome()">Declaración de ingresos</span>
+      <span class="mx-2 fs-6 text-uppercase option" (click)="onDeclarationExpense()" >Declaración de gastos</span>
+      <span class="mx-2 fs-6 text-uppercase option" (click)="onCalculation()" >Cálculo de impuestos</span>
+      <span class="mx-2 fs-6 text-uppercase option" (click)="onHistory()" >Historial de Declaraciones</span>
     </div>
     <button class="btn btn-outline-light" (click)="logout()">
       <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
