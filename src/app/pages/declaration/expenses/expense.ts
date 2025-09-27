@@ -142,15 +142,22 @@ export class ExpenseComponent implements OnInit {
       next: (users) => {
         this.users.set(users);
 
+         const contribuyente = users.filter(u =>
+        (u.role ?? '').toLowerCase() !== 'admin' &&
+        (u.username ?? '').toLowerCase() !== 'admin' &&
+        (u.name ?? '').toLowerCase() !== 'administrador'
+      );
+
         // Se llena el Contribuyente
         const userItem = this.formConfig.items.find(i => i.prop === 'userId');
         if (userItem) {
-          userItem.options = users.map(u => ({
+          userItem.options = contribuyente.map(u => ({
             value: Number(u.id),
             label: `${u.name} (${u.documentType}: ${u.documentNumber || '—'})`
           }));
         }
-        this.formModel = { userId: users[0]?.id ?? null, category: 'Otros' };
+        const firstId = contribuyente.length ? Number(contribuyente[0].id) : null;
+        this.formModel = { userId: firstId, category: 'Otros' };
         this.loadExpenses();
       },
       error: () => this.flash('danger', 'No se pudieron cargar los usuarios.')

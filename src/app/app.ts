@@ -1,11 +1,10 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { Cabecera } from "./pages/cabecera/cabecera";
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, MatSlideToggleModule, Cabecera],
+  imports: [RouterOutlet, MatSlideToggleModule],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })

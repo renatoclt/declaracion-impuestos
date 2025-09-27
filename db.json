@@ -31,6 +31,17 @@
       "email": "ana.torres@gmail.com",
       "address": "Av. Precursores 1050",
       "role": "taxpayer"
+    },
+    {
+      "id": "6",
+      "name": "Frank Bautista",
+      "username": "fbautisr",
+      "password": "fbautsir123",
+      "documentType": "DNI",
+      "documentNumber": "46273453",
+      "email": "fbautisr@gmail.com",
+      "address": "Lima Norte",
+      "role": "taxpayer"
     }
   ],
   "taxTypes": [
@@ -139,60 +150,36 @@
   ],
   "expenses": [
     {
-      "id": "1",
-      "userId": 1,
-      "category": "Educación",
-      "amount": 5000,
-      "period": "2025-01",
-      "description": "Matrícula universitaria."
+      "id": "7c4f",
+      "userId": 4,
+      "period": "2025-04",
+      "amount": 500,
+      "description": "dentista",
+      "category": "Salud"
     },
     {
-      "id": "2",
-      "userId": 2,
-      "category": "Salud",
-      "amount": 3000,
-      "period": "2025-01",
-      "description": "Seguro médico."
-    },
-    {
-      "id": "3",
-      "userId": 3,
-      "period": "2025-03",
-      "amount": 950,
-      "description": "pantalon",
-      "category": "Vestimenta"
-    },
-    {
-      "id": "4",
-      "userId": 2,
-      "period": "2025-02",
-      "amount": 900,
+      "id": "f90e",
+      "userId": 6,
+      "period": "2025-04",
+      "amount": 100,
       "description": "bebidas",
       "category": "Alimentación"
     },
     {
-      "id": "1fde",
-      "userId": 3,
-      "period": "2025-05",
-      "amount": 15000,
-      "description": "reloj",
+      "id": "38b4",
+      "userId": 6,
+      "period": "2025-06",
+      "amount": 1000,
+      "description": "reloj elegante",
       "category": "Vestimenta"
     },
     {
-      "id": "a95d",
-      "userId": 1,
-      "period": "2025-02",
-      "amount": 2222,
-      "description": "dentista, medicina",
-      "category": "Salud"
-    },
-    {
-      "id": "3a1e",
-      "userId": 2,
-      "period": "2025-04",
-      "amount": 600,
-      "description": "agua, luz",
-      "category": "Vivienda"
+      "id": "8cd9",
+      "userId": 5,
+      "period": "2025-06",
+      "amount": 5000,
+      "description": "gasolina",
+      "category": "Transporte"
     }
   ],
   "declarations": [
