@@ -29,9 +29,6 @@
             </p>
           </div>
           <div class="btn-group">
-            <button class="btn btn-success" (click)="createNewDeclaration()">
-              <i class="fas fa-plus me-2"></i>Nueva Declaración
-            </button>
             <button class="btn btn-outline-primary" (click)="exportToCSV()">
               <i class="fas fa-download me-2"></i>Exportar CSV
             </button>
@@ -232,10 +229,10 @@
             <div *ngIf="filteredDeclarations.length === 0" class="text-center py-4">
               <i class="fas fa-search fa-3x text-muted mb-3"></i>
               <h5 class="text-muted">No se encontraron declaraciones</h5>
-              <p class="text-muted">Intenta ajustar los filtros o crear una nueva declaración.</p>
-              <button class="btn btn-primary" (click)="createNewDeclaration()">
-                <i class="fas fa-plus me-2"></i>Nueva Declaración
-              </button>
+              <p class="text-muted">
+                No hay declaraciones que coincidan con los criterios de búsqueda o aún no se han
+                creado declaraciones.
+              </p>
             </div>
 
             <!-- Table -->

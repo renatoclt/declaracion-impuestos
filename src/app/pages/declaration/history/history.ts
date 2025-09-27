@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../../shared/services/auth-service';
 
 interface User {
   id: number | string;
@@ -43,6 +44,7 @@ interface Declaration {
 export class History implements OnInit {
   private router = inject(Router);
   private http = inject(HttpClient);
+  private authService = inject(AuthService);
   private readonly API_URL = 'http://localhost:3000';
 
   declarations: Declaration[] = [];
@@ -76,8 +78,93 @@ export class History implements OnInit {
   private loadData() {
     this.isLoading = true;
     this.hasError = false;
-    const currentUserId = 1;
-    this.loadDeclarations(currentUserId);
+
+    // Verificar si el usuario está autenticado
+    if (!this.authService.isLoggedIn()) {
+      this.handleAuthError();
+      return;
+    }
+
+    // Obtener el usuario actual desde el AuthService
+    this.loadCurrentUser();
+  }
+
+  private loadCurrentUser() {
+    const loggedUserId = this.authService.getUserId();
+
+    if (!loggedUserId) {
+      this.handleAuthError();
+      return;
+    }
+
+    this.http.get<User>(`${this.API_URL}/users/${loggedUserId}`).subscribe({
+      next: (user) => {
+        this.currentUser = user;
+        this.loadDeclarations(Number(loggedUserId));
+      },
+      error: (error) => {
+        // Si falla la carga del usuario específico, intentar buscar en todos los usuarios
+        this.loadUserFromAll(loggedUserId);
+      }
+    });
+  }
+
+  private loadUserFromAll(userId: string) {
+    this.http.get<User[]>(`${this.API_URL}/users`).subscribe({
+      next: (users) => {
+        this.currentUser = users?.find(u => u.id.toString() === userId.toString()) || null;
+
+        if (this.currentUser) {
+          this.loadDeclarations(Number(userId));
+        } else {
+          this.handleAuthError();
+        }
+      },
+      error: (error) => {
+        this.handleAuthError();
+      }
+    });
+  }
+
+  private getLoggedUserId(): string | number | null {
+    // Opción 1: Desde localStorage
+    const userFromStorage = localStorage.getItem('currentUser');
+    if (userFromStorage) {
+      try {
+        const user = JSON.parse(userFromStorage);
+        return user.id;
+      } catch (e) {
+        console.error('Error parsing user from localStorage:', e);
+      }
+    }
+
+    // Opción 2: Desde sessionStorage
+    const userFromSession = sessionStorage.getItem('currentUser');
+    if (userFromSession) {
+      try {
+        const user = JSON.parse(userFromSession);
+        return user.id;
+      } catch (e) {
+        console.error('Error parsing user from sessionStorage:', e);
+      }
+    }
+
+    // Opción 3: Desde un servicio de autenticación (ejemplo)
+    // return this.authService.getCurrentUserId();
+
+    // Si no se encuentra usuario logueado, retornar null
+    return null;
+  }
+
+  private handleAuthError() {
+    this.hasError = true;
+    this.isLoading = false;
+    this.errorMessage = 'No se pudo identificar el usuario logueado. Por favor, inicie sesión nuevamente.';
+
+    // Redirigir al login después de 2 segundos
+    setTimeout(() => {
+      this.authService.logout();
+    }, 2000);
   }
 
   private loadDeclarations(userId: number) {
@@ -89,15 +176,16 @@ export class History implements OnInit {
         this.loadTaxTypes();
       },
       error: (error) => {
-        this.loadAllDeclarations();
+        this.loadAllDeclarationsFiltered(userId);
       }
     });
   }
 
-  private loadAllDeclarations() {
+  private loadAllDeclarationsFiltered(userId: number) {
     this.http.get<Declaration[]>(`${this.API_URL}/declarations`).subscribe({
       next: (declarations) => {
-        this.declarations = declarations?.filter(d => d.userId === 1) || [];
+        // Filtrar solo las declaraciones del usuario logueado
+        this.declarations = declarations?.filter(d => d.userId === userId) || [];
         this.loadTaxTypes();
       },
       error: (error) => {
@@ -110,23 +198,6 @@ export class History implements OnInit {
     this.http.get<TaxType[]>(`${this.API_URL}/taxTypes`).subscribe({
       next: (taxTypes) => {
         this.taxTypes = taxTypes || [];
-        this.loadUsers();
-      },
-      error: (error) => {
-        this.handleLoadError(error);
-      }
-    });
-  }
-
-  private loadUsers() {
-    this.http.get<User[]>(`${this.API_URL}/users`).subscribe({
-      next: (users) => {
-        this.currentUser = users?.find(u => u.id.toString() === '1') || null;
-
-        if (!this.currentUser && users && users.length > 0) {
-          this.currentUser = users[0];
-        }
-
         this.finishLoading();
       },
       error: (error) => {
@@ -337,10 +408,6 @@ export class History implements OnInit {
 
   goBack() {
     this.router.navigate(['/dashboard']);
-  }
-
-  createNewDeclaration() {
-    this.router.navigate(['/declaration/new']);
   }
 
   get showingStart(): number {
