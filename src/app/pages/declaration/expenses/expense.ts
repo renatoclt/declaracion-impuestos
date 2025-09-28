@@ -2,6 +2,7 @@ import { FormConfig } from "@/app/shared/interfaces/admin-form.interface";
 import { Expense } from "@/app/shared/interfaces/expenses.interface";
 import { Reporte } from "@/app/shared/interfaces/report-form.interface";
 import { User } from "@/app/shared/interfaces/user.interface";
+import { AuthService } from "@/app/shared/services/auth-service";
 import { ExpenseService } from "@/app/shared/services/expense-service";
 import { UserService } from "@/app/shared/services/user-service";
 import { CommonModule } from "@angular/common";
@@ -41,6 +42,8 @@ export class ExpenseComponent implements OnInit {
   private readonly router = inject(Router);
   loading = signal(false);
   message = signal<{ type: 'success' | 'danger' | 'info', text: string } | null>(null);
+  private currentUserId: number | null = null;
+  lockUserSelect = false;
 
   flash(type: 'success' | 'danger' | 'info', text: string): void {
     this.message.set({ type, text });
@@ -129,61 +132,70 @@ export class ExpenseComponent implements OnInit {
 
 
   constructor(private readonly expenseService: ExpenseService, private readonly userService: UserService) { }
-
+  
+  private readonly authService: AuthService = inject(AuthService);
 
   ngOnInit(): void {
-    //cargar usuarios y después gastos
+    const rawId = Number(this.authService.getUserId());
+    this.currentUserId = rawId !== null ? Number(rawId) : null;
+    this.lockUserSelect = this.currentUserId !== null;
     this.loadUsersThenExpenses();
   }
 
-  // Carga usuarios y despues carga gastos
   private loadUsersThenExpenses(): void {
-    this.userService.getUser().subscribe({
-      next: (users) => {
-        this.users.set(users);
+  this.userService.getUser().subscribe({
+    next: (users) => {
+      this.users.set(users);
 
-         const contribuyente = users.filter(u =>
-        (u.role ?? '').toLowerCase() !== 'admin' &&
-        (u.username ?? '').toLowerCase() !== 'admin' &&
-        (u.name ?? '').toLowerCase() !== 'administrador'
-      );
+      // Si hay usuario logueado muestro ese y filtro sin admin.
+      const options = this.currentUserId !== null
+        ? users.filter(u => Number(u.id) === this.currentUserId)
+        : users.filter(u =>
+            (u.role ?? '').toLowerCase() !== 'admin' &&
+            (u.username ?? '').toLowerCase() !== 'admin' &&
+            (u.name ?? '').toLowerCase() !== 'administrador'
+          );
 
-        // Se llena el Contribuyente
-        const userItem = this.formConfig.items.find(i => i.prop === 'userId');
-        if (userItem) {
-          userItem.options = contribuyente.map(u => ({
-            value: Number(u.id),
-            label: `${u.name} (${u.documentType}: ${u.documentNumber || '—'})`
-          }));
-        }
-        const firstId = contribuyente.length ? Number(contribuyente[0].id) : null;
-        this.formModel = { userId: firstId, category: 'Otros' };
-        this.loadExpenses();
-      },
-      error: () => this.flash('danger', 'No se pudieron cargar los usuarios.')
-    });
-  }
+      const userItem = this.formConfig.items.find(i => i.prop === 'userId');
+      if (userItem) {
+        userItem.options = options.map(u => ({
+          value: Number(u.id),
+          label: `${u.name} (${u.documentType}: ${u.documentNumber || '—'})`
+        }));
+      }
+      const firstId = this.currentUserId ?? (options.length ? Number(options[0].id) : null);
+      this.formModel = { userId: firstId, category: 'Otros' };
+
+      this.loadExpenses();
+    },
+    error: () => this.flash('danger', 'No se pudieron cargar los usuarios.')
+  });
+}
 
   private loadExpenses(): void {
-    this.loading.set(true);
-    this.expenseService.getExpensesWithUsers().subscribe({
-      next: (data) => {
-        const users = this.users();
-        const vm = data.map(e => ({
-          ...e,
-          userName: e.user?.name
-            ?? users.find(u => Number(u.id) === Number(e.userId))?.name
-            ?? `ID ${e.userId}`
-        }));
-        this.expenses.set(vm);
-        this.loading.set(false);
-      },
-      error: () => {
-        this.loading.set(false);
-        this.flash('danger', 'No se pudieron cargar los gastos.');
-      }
-    });
-  }
+  this.loading.set(true);
+  this.expenseService.getExpensesWithUsers().subscribe({
+    next: (data) => {
+      const users = this.users();
+      const filtered = this.currentUserId !== null
+        ? data.filter(e => Number(e.userId) === this.currentUserId)
+        : data;
+
+      const vm = filtered.map(e => ({
+        ...e,
+        userName: e.user?.name
+          ?? users.find(u => Number(u.id) === Number(e.userId))?.name
+          ?? `ID ${e.userId}`
+      }));
+      this.expenses.set(vm);
+      this.loading.set(false);
+    },
+    error: () => {
+      this.loading.set(false);
+      this.flash('danger', 'No se pudieron cargar los gastos.');
+    }
+  });
+}
 
 
   onModelChange(prop: string, value: any): void {
@@ -217,48 +229,51 @@ export class ExpenseComponent implements OnInit {
   }
 
   onSubmit(form: NgForm): void {
-    this.submitted = true;
-    if (form.invalid) return;
+  this.submitted = true;
+  if (form.invalid) return;
 
-    const base: Omit<Expense, 'id'> = {
-      userId: Number(this.formModel['userId']),
-      period: String(this.formModel['period']),
-      amount: Number(this.formModel['amount']),
-      description: String(this.formModel['description']),
-      category: String(this.formModel['category'] || this.inferCategory(this.formModel['description'] || '') || 'Otros')
-    };
+  const effectiveUserId =
+    this.currentUserId ?? Number(this.formModel['userId']);
 
-    const req$ = this.editingId !== null
-      ? this.expenseService.updateExpense({ id: this.editingId, ...base })
-      : this.expenseService.addExpense(base);
+  const base: Omit<Expense, 'id'> = {
+    userId: effectiveUserId,
+    period: String(this.formModel['period']),
+    amount: Number(this.formModel['amount']),
+    description: String(this.formModel['description']),
+    category: String(this.formModel['category'] || this.inferCategory(this.formModel['description'] || '') || 'Otros')
+  };
 
-    req$.subscribe({
-      next: () => {
-        Swal.fire({ icon: 'success', title: this.editingId !== null ? 'Gasto actualizado' : 'Gasto creado', timer: 1200, showConfirmButton: false });
-        this.clearForm();
-        this.loadExpenses();
-      },
-      error: () => Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo guardar el gasto.' })
-    });
-  }
+  const req$ = this.editingId !== null
+    ? this.expenseService.updateExpense({ id: this.editingId, ...base })
+    : this.expenseService.addExpense(base);
+
+  req$.subscribe({
+    next: () => {
+      Swal.fire({ icon: 'success', title: this.editingId !== null ? 'Gasto actualizado' : 'Gasto creado', timer: 1200, showConfirmButton: false });
+      this.clearForm();
+      this.loadExpenses();
+    },
+    error: () => Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo guardar el gasto.' })
+  });
+}
 
   edit(row: Expense): void {
-    this.editingId = row.id;
-    this.formModel = {
-      userId: Number(row.userId),
-      period: row.period,
-      amount: row.amount,
-      description: row.description,
-      category: row.category
-    };
-    this.submitted = false;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
+  this.editingId = row.id;
+  this.formModel = {
+    userId: this.currentUserId ?? Number(row.userId),
+    period: row.period,
+    amount: row.amount,
+    description: row.description,
+    category: row.category
+  };
+  this.submitted = false;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
   remove(row: Expense): void {
     Swal.fire({
       title: 'Eliminar gasto',
-      text: `¿Seguro que deseas eliminar "${row.description}"? Esta acción no se puede revertir.`,
+      text: `¿Seguro que deseas eliminar "${row.description}" ? Esta acción no se puede revertir.`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
@@ -272,7 +287,7 @@ export class ExpenseComponent implements OnInit {
 
       this.expenseService.deleteExpense(id).subscribe({
         next: () => {
-          Swal.fire({ icon: 'success', title: 'Eliminado', timer: 1200, showConfirmButton: false });
+          Swal.fire({ icon: 'success', title: 'Gasto Eliminado', timer: 1200, showConfirmButton: false });
           if (this.editingId === id) this.clearForm();
           this.loadExpenses();
         },
@@ -284,11 +299,12 @@ export class ExpenseComponent implements OnInit {
   }
 
   clearForm(): void {
-    this.editingId = null;
-    this.submitted = false;
-    const firstUserId = this.users()[0]?.id ?? null;
-    this.formModel = { userId: firstUserId, category: 'Otros' };
-  }
+  this.editingId = null;
+  this.submitted = false;
+  const fallback = this.users()[0]?.id ?? null;
+  const userId = this.currentUserId ?? (fallback !== null ? Number(fallback) : null);
+  this.formModel = { userId, category: 'Otros' };
+}
 
   back() {
     this.router.navigate(['/dashboard'])

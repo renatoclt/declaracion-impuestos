@@ -71,28 +71,12 @@
   ],
   "incomes": [
     {
-      "id": "201",
-      "userId": 1,
-      "source": "Salario",
-      "amount": 50000,
-      "period": "2025-01",
-      "description": "Ingresos por sueldo en empresa XYZ."
-    },
-    {
-      "id": "202",
-      "userId": 2,
-      "source": "Honorario",
-      "amount": 20000,
-      "period": "2025-01",
-      "description": "Servicios profesionales."
-    },
-    {
       "id": "203",
-      "userId": 3,
+      "userId": 6,
       "source": "Salario",
       "amount": 4000,
       "period": "2025-09",
-      "description": "prueba"
+      "description": "prueba edit"
     },
     {
       "id": "204",
@@ -152,11 +136,11 @@
     },
     {
       "id": "212",
-      "userId": 3,
+      "userId": 6,
       "source": "Alquiler",
       "amount": 250,
       "period": "2025-09",
-      "description": "alquiler camioneta"
+      "description": "alquiler camioneta 4x4"
     },
     {
       "id": "213",
@@ -165,49 +149,17 @@
       "amount": 4000,
       "period": "2025-09",
       "description": "pago mensual"
-    },
-    {
-      "id": "214",
-      "userId": 4,
-      "source": "Honorario",
-      "amount": 4000,
-      "period": "2025-09",
-      "description": "sueldo mensual "
-    },
-    {
-      "id": "215",
-      "userId": 4,
-      "source": "Salario",
-      "amount": 1000,
-      "period": "2025-09",
-      "description": "salario"
-    },
-    {
-      "id": "216",
-      "userId": 4,
-      "source": "Alquiler",
-      "amount": 1000,
-      "period": "2025-09",
-      "description": "123"
-    },
-    {
-      "id": "217",
-      "userId": 7,
-      "source": "Salario",
-      "amount": 123,
-      "period": "2025-09",
-      "description": "132"
-    },
-    {
-      "id": "218",
-      "userId": 7,
-      "source": "Honorario",
-      "amount": 190,
-      "period": "2025-09",
-      "description": "123131"
     }
   ],
   "expenses": [
+    {
+      "id": "7c4f",
+      "userId": 4,
+      "period": "2025-04",
+      "amount": 500,
+      "description": "dentista",
+      "category": "Salud"
+    },
     {
       "id": "f90e",
       "userId": 6,
@@ -233,34 +185,18 @@
       "category": "Transporte"
     },
     {
-      "id": "c7d3",
+      "id": "ed26",
+      "userId": 4,
+      "period": "2025-02",
+      "amount": 500,
+      "description": "clinica",
+      "category": "Salud"
+    },
+    {
+      "id": "aff9",
       "userId": 4,
       "period": "2025-03",
-      "amount": 190,
-      "description": "bebidas",
-      "category": "Alimentación"
-    },
-    {
-      "id": "bb2a",
-      "userId": 4,
-      "period": "2025/09",
-      "amount": 50,
-      "description": "123",
-      "category": "Otros"
-    },
-    {
-      "id": "7d83",
-      "userId": 7,
-      "period": "2025/09",
-      "amount": 100,
-      "description": "bebidas",
-      "category": "Alimentación"
-    },
-    {
-      "id": "b974",
-      "userId": 7,
-      "period": "2025-09",
-      "amount": 100,
+      "amount": 400,
       "description": "bebidas",
       "category": "Alimentación"
     }
