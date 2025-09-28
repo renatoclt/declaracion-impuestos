@@ -1,63 +1,28 @@
-# DeclaracionImpuestos
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.1.6.
+## INTEGRANTES
+Franklin Bautista Roca
+Jhosep Junior Espinoza Sanjinez
+Renato Jesus Cohaila La Torre
+Luis Simon Martinez
+ 
+## INDICACIONES
+1- Se esta trabajando con la versión de angular 20+
+2- Ejecutar el proyecto con: npm start
+3- Tener en cuenta que las credenciales para ingresar son las registradas en el db.json que se encuentra en el proyecto, por ejemplo:
 
-## Development server
-
-To start a local development server, run:
-
-```bash
-npm install
-```
-
-```bash
-npm run start
-```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+*ADMINISTRADOR
+documentNumber: 87654321  
+password: admin123
+ 
+Nota: Al entrar con el administrador se podrá realizar el CRUD de usuarios (contributyentes), ver los impuestos que existen y descargar el  reporte de declaraciones
+ 
+*Usuario 
+documentNumber: 87651230  
+password: Ana123Torres
+ 
+Nota: Al entrar con un usuario se podrá ver un dashboard principal y las diferentes opciones a donde ingresar como son:
+1-Declaración de ingresos
+2-Declaración de gastos
+3-Cálculo de impuestos
+4-Historial de declaraciones
+Tener en cuenta que en los módulos de ingresos y gastos solo se podrá visualizar y registrar los datos pertenecientes al usuario logueado

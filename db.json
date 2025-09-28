@@ -207,6 +207,22 @@
       "amount": 400,
       "description": "bebidas",
       "category": "Alimentación"
+    },
+    {
+      "id": "be29",
+      "userId": 3,
+      "period": "2025-02",
+      "amount": 1000,
+      "description": "dentista",
+      "category": "Salud"
+    },
+    {
+      "id": "befd",
+      "userId": 3,
+      "period": "2025-06",
+      "amount": 500,
+      "description": "bebidas",
+      "category": "Alimentación"
     }
   ],
   "declarations": [
