@@ -14,20 +14,22 @@ export class IncomeService {
 
     constructor(private readonly http: HttpClient, private readonly userService: UserService) { }
 
-    getIncomesWithUsers(): Observable<(IIncome & { user?: User })[]> {
-        return forkJoin({
-            incomes: this.http.get<IIncome[]>(this.apiUrl),
-            users: this.userService.getUser()
-        }).pipe(
-            map(({ incomes, users }) =>
-                incomes.map(income => ({
-                    ...income,
-                    user: users.find(u => u.id === income.userId)
-                }))
-            ),
-            delay(1000)
-        );
-    }
+  getIncomesWithUsers(): Observable<(IIncome & { user?: User })[]> {
+  return forkJoin({
+    incomes: this.http.get<IIncome[]>(this.apiUrl),
+    users: this.userService.getUser()
+  }).pipe(
+    map(({ incomes, users }) =>
+      incomes.map(income => {
+        // Normaliza a string para evitar 1 vs "1"
+        const incomeUserId = String(income.userId);
+        const user = users.find(u => String(u.id) === incomeUserId);
+        return { ...income, user };
+      })
+    ),
+    delay(500)
+  );
+}
 
     getIncomeId(id: number): Observable<IIncome> {
         return this.http.get<IIncome>(`${this.apiUrl}/${id}`);
@@ -41,7 +43,7 @@ export class IncomeService {
         return this.http.put<IIncome>(`${this.apiUrl}/${income.id}`, income).pipe(delay(2000));
     }
 
-    deleteIncome(id: number): Observable<any> {
+    deleteIncome(id: string): Observable<any> {
         return this.http.delete(`${this.apiUrl}/${id}`).pipe(delay(2000));
     }
 

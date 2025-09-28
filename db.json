@@ -60,28 +60,12 @@
   ],
   "incomes": [
     {
-      "id": "201",
-      "userId": 1,
-      "source": "Salario",
-      "amount": 50000,
-      "period": "2025-01",
-      "description": "Ingresos por sueldo en empresa XYZ."
-    },
-    {
-      "id": "202",
-      "userId": 2,
-      "source": "Honorario",
-      "amount": 20000,
-      "period": "2025-01",
-      "description": "Servicios profesionales."
-    },
-    {
       "id": "203",
-      "userId": 3,
+      "userId": 6,
       "source": "Salario",
       "amount": 4000,
       "period": "2025-09",
-      "description": "prueba"
+      "description": "prueba edit"
     },
     {
       "id": "204",
@@ -141,11 +125,11 @@
     },
     {
       "id": "212",
-      "userId": 3,
+      "userId": 6,
       "source": "Alquiler",
       "amount": 250,
       "period": "2025-09",
-      "description": "alquiler camioneta"
+      "description": "alquiler camioneta 4x4"
     },
     {
       "id": "213",
@@ -154,14 +138,6 @@
       "amount": 4000,
       "period": "2025-09",
       "description": "pago mensual"
-    },
-    {
-      "id": "214",
-      "userId": 4,
-      "source": "Honorario",
-      "amount": 4000,
-      "period": "2025-09",
-      "description": "sueldo mensual "
     }
   ],
   "expenses": [
@@ -196,6 +172,22 @@
       "amount": 5000,
       "description": "gasolina",
       "category": "Transporte"
+    },
+    {
+      "id": "ed26",
+      "userId": 4,
+      "period": "2025-02",
+      "amount": 500,
+      "description": "clinica",
+      "category": "Salud"
+    },
+    {
+      "id": "aff9",
+      "userId": 4,
+      "period": "2025-03",
+      "amount": 400,
+      "description": "bebidas",
+      "category": "Alimentación"
     }
   ],
   "declarations": [

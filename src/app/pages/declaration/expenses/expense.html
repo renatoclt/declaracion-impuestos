@@ -30,6 +30,11 @@
     align-items: center;
     white-space: nowrap;
   }
+
+  button[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+  }
 </style>
 
 
@@ -80,7 +85,7 @@
                   <span matTextSuffix>S/&nbsp;</span>
                   }
 
-                  <mat-error *ngIf="ctrl.invalid && (ctrl.dirty || submitted)">
+                  <mat-error *ngIf="ctrl.invalid && (ctrl.touched || submitted)">
                     @if (ctrl.errors?.['required']) { Campo requerido. }
                     @if (ctrl.errors?.['min']) { Valor mínimo: {{ item.min }}. }
                     @if (ctrl.errors?.['pattern']) { Formato inválido. }
@@ -94,7 +99,8 @@
 
                   <mat-select name="{{ item.prop }}" required="{{ item.required || null }}"
                     [(ngModel)]="formModel[item.prop]" (selectionChange)="onModelChange(item.prop, $event.value)"
-                    #ctrl="ngModel">
+                    #ctrl="ngModel"
+                    >
                     @for (opt of (item.options || []); track opt.value) {
                     <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
                     }
@@ -117,7 +123,7 @@
             </div>
 
             <div class="col-12 mt-2">
-              <button matButton="filled" type="submit">
+              <button matButton="filled" type="submit" [disabled]="f.invalid">
                 {{ editingId ? 'Actualizar' : 'Guardar' }}
               </button>
 
