@@ -22,26 +22,6 @@
 </div>
 }
 
-@if (!isLoading && !hasError) {
-<nav class="navbar navbar-dark bg-primary">
-  <div class="container-fluid">
-    <div class="d-flex flex-column">
-      <a class="navbar-brand" href="#">Dashboard de Declaraciones</a>
-      <span class="text-white"> <i class="fas fa-user"></i> <span class="mx-2">Bienvenido {{ currentUser?.name
-          }}</span></span>
-    </div>
-    <div class="d-flex text-white px-10">
-      <span class="mx-2 fs-6 text-uppercase option" (click)="onDeclarationIncome()">Declaración de ingresos</span>
-      <span class="mx-2 fs-6 text-uppercase option" (click)="onDeclarationExpense()" >Declaración de gastos</span>
-      <span class="mx-2 fs-6 text-uppercase option" (click)="onCalculation()" >Cálculo de impuestos</span>
-      <span class="mx-2 fs-6 text-uppercase option" (click)="onHistory()" >Historial de Declaraciones</span>
-    </div>
-    <button class="btn btn-outline-light" (click)="logout()">
-      <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
-    </button>
-  </div>
-</nav>
-
 <div class="container-fluid py-4">
   <!-- Main Content -->
 
@@ -183,8 +163,8 @@
             </div>
           </div>
         </div>
-      </div>  
-      
+      </div>
+
 
       <!-- Acciones Rápidas -->
       <div class="col-lg-4 mb-4">
@@ -294,5 +274,3 @@
     </div> -->
   </div>
 </div>
-
-}

@@ -1,5 +1,7 @@
 <!-- <button class="btn btn-primary">Botón Bootstrap</button>
 
 <mat-slide-toggle>Toggle me!</mat-slide-toggle> -->
-<!-- <app-cabecera [mostrarCebecera]="mostrarCabeceraEnComponente"></app-cabecera> -->
+@if(mostrarCabeceraEnComponente) {
+  <app-cabecera ></app-cabecera>
+}
 <router-outlet />
