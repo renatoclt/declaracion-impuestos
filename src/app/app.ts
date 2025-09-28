@@ -14,10 +14,10 @@ export class App implements OnInit {
   private AuthService = inject(AuthService);
   mostrarCabeceraEnComponente:boolean = false;
   protected readonly title = signal('declaracion-impuestos');
-  ngOnInit(): void {
-    if (this.AuthService.getUserRole()){
-      this.mostrarCabeceraEnComponente = true;
-    }
+ngOnInit(): void {
 
+    this.AuthService.authStatus$.subscribe((isAuthenticated) => {
+      this.mostrarCabeceraEnComponente = isAuthenticated;
+    });
   }
 }

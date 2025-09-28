@@ -2,7 +2,7 @@ import { UserService } from './user-service';
 import { Injectable, inject, signal } from '@angular/core';
 
 import { Router } from '@angular/router';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, of, throwError, Subject } from 'rxjs';
 import { delay, map, catchError } from 'rxjs/operators';
 import { UserRole } from '../enum/user-role';
 import { User } from '../interfaces/user.interface';
@@ -19,6 +19,7 @@ export class AuthService {
   isAuthenticated = signal<boolean>(this.hasValidToken());
 
   private readonly TOKEN_KEY = 'auth_token';
+  authStatus$ = new Subject<boolean>();
   private readonly ROLE_KEY = 'user_role';
   private readonly USER_ID = 'user_id';
 
@@ -44,6 +45,7 @@ export class AuthService {
           // Actualizar signal
           this.isAuthenticated.set(true);
 
+          this.authStatus$.next(true);
           return {
             success: true,
             token: mockToken,
@@ -69,6 +71,7 @@ export class AuthService {
     localStorage.removeItem(this.ROLE_KEY);
     localStorage.removeItem(this.USER_ID);
     this.isAuthenticated.set(false);
+    this.authStatus$.next(false);
     this.router.navigate(['/login']);
   }
 
@@ -86,7 +89,7 @@ export class AuthService {
   }
 
   redirectByRole(role: UserRole): void {
-    
+
     const routes = {
       admin: '/admin-dashboard',
       taxpayer: '/user-dashboard'

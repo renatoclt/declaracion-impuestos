@@ -10,6 +10,7 @@ import { HttpClient } from '@angular/common/http';
   selector: 'app-cabecera',
   imports: [],
   templateUrl: './cabecera.html',
+  styleUrls: ['./cabecera.scss']
 })
 export class Cabecera  implements OnInit{
     private readonly router = inject(Router);
