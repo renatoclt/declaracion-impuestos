@@ -24,6 +24,7 @@ import { UserRole } from '@/app/shared/enum/user-role';
 import { Expense } from '@/app/shared/interfaces/expenses.interface';
 import { IIncome } from '@/app/shared/interfaces/income.interface';
 import { UserService } from '@/app/shared/services/user-service';
+import { Router } from '@angular/router';
 
 
 
@@ -57,6 +58,7 @@ private fb = inject(FormBuilder);
   private userService = inject(UserService);
   private calculationService = inject(CalculationService);
   private incomeService = inject(IncomeService);
+  private readonly router = inject(Router);
 
   // Signals para manejo de estado
   isLoading = signal(false);
@@ -389,5 +391,8 @@ private fb = inject(FormBuilder);
 
   getExpenseCount(): number {
     return this.getCurrentExpenses().length;
+  }
+  back() {
+    this.router.navigate(['/dashboard'])
   }
 }
