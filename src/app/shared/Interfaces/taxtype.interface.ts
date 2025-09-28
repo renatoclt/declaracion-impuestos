@@ -1,5 +1,5 @@
 export interface TaxType{
-id: number,
+id: string,
 name: string,
 description: string,
 rate: number

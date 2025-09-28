@@ -14,9 +14,9 @@
       "id": "4",
       "name": "Luis Simon Martinez",
       "username": "lsimon",
-      "password": "martinez123",
+      "password": "123456",
       "documentType": "DNI",
-      "documentNumber": "78965432",
+      "documentNumber": "73020238",
       "email": "simonmartinez.luis@gmail.com",
       "address": "Jr. Elias Mabama 121",
       "role": "taxpayer"
@@ -41,6 +41,17 @@
       "documentNumber": "46273453",
       "email": "fbautisr@gmail.com",
       "address": "Lima Norte",
+      "role": "taxpayer"
+    },
+    {
+      "id": "7",
+      "name": "Renato",
+      "username": "renatoclt",
+      "password": "123456",
+      "documentType": "DNI",
+      "documentNumber": "73020239",
+      "email": "renatoclt@hotmail.com",
+      "address": "051",
       "role": "taxpayer"
     }
   ],
@@ -162,17 +173,41 @@
       "amount": 4000,
       "period": "2025-09",
       "description": "sueldo mensual "
+    },
+    {
+      "id": "215",
+      "userId": 4,
+      "source": "Salario",
+      "amount": 1000,
+      "period": "2025-09",
+      "description": "salario"
+    },
+    {
+      "id": "216",
+      "userId": 4,
+      "source": "Alquiler",
+      "amount": 1000,
+      "period": "2025-09",
+      "description": "123"
+    },
+    {
+      "id": "217",
+      "userId": 7,
+      "source": "Salario",
+      "amount": 123,
+      "period": "2025-09",
+      "description": "132"
+    },
+    {
+      "id": "218",
+      "userId": 7,
+      "source": "Honorario",
+      "amount": 190,
+      "period": "2025-09",
+      "description": "123131"
     }
   ],
   "expenses": [
-    {
-      "id": "7c4f",
-      "userId": 4,
-      "period": "2025-04",
-      "amount": 500,
-      "description": "dentista",
-      "category": "Salud"
-    },
     {
       "id": "f90e",
       "userId": 6,
@@ -196,6 +231,38 @@
       "amount": 5000,
       "description": "gasolina",
       "category": "Transporte"
+    },
+    {
+      "id": "c7d3",
+      "userId": 4,
+      "period": "2025-03",
+      "amount": 190,
+      "description": "bebidas",
+      "category": "Alimentación"
+    },
+    {
+      "id": "bb2a",
+      "userId": 4,
+      "period": "2025/09",
+      "amount": 50,
+      "description": "123",
+      "category": "Otros"
+    },
+    {
+      "id": "7d83",
+      "userId": 7,
+      "period": "2025/09",
+      "amount": 100,
+      "description": "bebidas",
+      "category": "Alimentación"
+    },
+    {
+      "id": "b974",
+      "userId": 7,
+      "period": "2025-09",
+      "amount": 100,
+      "description": "bebidas",
+      "category": "Alimentación"
     }
   ],
   "declarations": [

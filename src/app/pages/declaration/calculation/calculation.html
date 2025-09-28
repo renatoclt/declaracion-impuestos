@@ -1,279 +1,521 @@
 <div class="container-fluid py-4">
-  <div class="row">
-    <div class="col-12">
-      <mat-card class="calculation-card">
-        <mat-card-header class="bg-primary text-white rounded-top p-3 mb-4">
-          <mat-card-title class="mb-0">
-            <mat-icon class="me-2">calculate</mat-icon>
+  <div class="row justify-content-center">
+    <div class="col-lg-8 col-xl-6">
+      <mat-card class="shadow-lg border-0">
+        <mat-card-header class="bg-primary text-white p-4 rounded-top">
+          <mat-card-title class="h4 mb-0 text-white">
+            <i class="fas fa-calculator me-2"></i>
             Cálculo de Impuestos
           </mat-card-title>
           <mat-card-subtitle class="text-white-50 mt-2">
-            Sistema de cálculo automático de IR e IGV
+            Complete los datos para calcular sus impuestos
           </mat-card-subtitle>
         </mat-card-header>
 
-        <mat-card-content>
+        <mat-card-content class="p-4">
           @if (isLoading()) {
           <div class="text-center py-5">
             <mat-spinner diameter="50"></mat-spinner>
-            <p class="mt-3 text-muted">Cargando datos...</p>
+            <p class="mt-3 text-muted">Procesando cálculo...</p>
           </div>
           } @else {
-          <!-- Formulario Principal -->
-          <form [formGroup]="calculationForm" (ngSubmit)="onSubmit()" class="mb-4">
+          <form [formGroup]="calculationForm" (ngSubmit)="onSubmit()" class="needs-validation">
             <div class="row g-3">
-              <!-- Selección de Usuario -->
-              <div class="col-md-4">
+              <!-- Usuario -->
+              <div class="col-md-6">
                 <mat-form-field appearance="outline" class="w-100">
-                  <mat-label>Seleccionar Contribuyente</mat-label>
-                  <mat-select formControlName="userId" required>
+                  <mat-label>Usuario</mat-label>
+                  <mat-select formControlName="userId" (selectionChange)="onPeriodOrUserChange()">
                     @for (user of users(); track user.id) {
                     <mat-option [value]="user.id">
-                      {{ user.name }} ({{ user.documentType }}: {{ user.documentNumber }})
+                      <div class="d-flex flex-column">
+                        <span class="fw-bold">{{ user.name }}</span>
+                        <small class="text-muted"
+                          >{{ user.email }} - {{ user.documentNumber }}</small
+                        >
+                      </div>
                     </mat-option>
                     }
                   </mat-select>
-                  <mat-error>Debe seleccionar un contribuyente</mat-error>
+                  <mat-error>
+                    @if (calculationForm.get('userId')?.hasError('required')) { Debe seleccionar un
+                    usuario }
+                  </mat-error>
                 </mat-form-field>
               </div>
 
               <!-- Período -->
-              <div class="col-md-4">
+              <div class="col-md-6">
                 <mat-form-field appearance="outline" class="w-100">
                   <mat-label>Período</mat-label>
-                  <mat-select formControlName="period" required>
-                    <mat-option value="2025-01">Enero 2025</mat-option>
-                    <mat-option value="2025-02">Febrero 2025</mat-option>
-                    <mat-option value="2025-03">Marzo 2025</mat-option>
-                    <mat-option value="2024-12">Diciembre 2024</mat-option>
-                    <mat-option value="2024-11">Noviembre 2024</mat-option>
-                  </mat-select>
-                  <mat-error>Debe seleccionar un período</mat-error>
+                  <input
+                    matInput
+                    formControlName="period"
+                    placeholder="YYYY-MM"
+                    pattern="[0-9]{4}-[0-9]{2}"
+                    (input)="onPeriodOrUserChange()"
+                  />
+                  <mat-error>
+                    @if (calculationForm.get('period')?.hasError('required')) { El período es
+                    requerido } @if (calculationForm.get('period')?.hasError('pattern')) { Formato:
+                    YYYY-MM (ej: 2025-03) }
+                  </mat-error>
                 </mat-form-field>
               </div>
 
               <!-- Tipo de Impuesto -->
-              <div class="col-md-4">
+              <div class="col-12">
                 <mat-form-field appearance="outline" class="w-100">
                   <mat-label>Tipo de Impuesto</mat-label>
-                  <mat-select formControlName="taxTypeId" required>
+                  <mat-select formControlName="taxTypeId" (selectionChange)="onTaxTypeChange()">
                     @for (taxType of taxTypes(); track taxType.id) {
                     <mat-option [value]="taxType.id">
-                      {{ taxType.name }} ({{ (taxType.rate * 100) }}%)
+                      <div class="d-flex flex-column">
+                        <span class="fw-bold">{{ taxType.name }}</span>
+                        <small class="text-muted"
+                          >{{ taxType.description }} - {{ taxType.rate * 100 }}%</small
+                        >
+                      </div>
                     </mat-option>
                     }
                   </mat-select>
-                  <mat-error>Debe seleccionar un tipo de impuesto</mat-error>
+                  <mat-error>
+                    @if (calculationForm.get('taxTypeId')?.hasError('required')) { Debe seleccionar
+                    un tipo de impuesto }
+                  </mat-error>
                 </mat-form-field>
+              </div>
+
+              <!-- Ingresos Totales -->
+              <div class="col-md-6">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>Ingresos Totales (Calculado)</mat-label>
+                  <input
+                    matInput
+                    type="number"
+                    formControlName="totalIncome"
+                    placeholder="0.00"
+                    readonly
+                    class="bg-light"
+                  />
+                  <span matTextPrefix>S/ </span>
+                  <mat-hint>
+                    @if (getIncomeCount() > 0) {
+                    {{ getIncomeCount() }} registro(s) de ingreso encontrado(s) } @else { No se
+                    encontraron ingresos para este período y usuario }
+                  </mat-hint>
+                  <mat-error>
+                    @if (calculationForm.get('totalIncome')?.hasError('required')) { Los ingresos
+                    totales son requeridos }
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <!-- Gastos Totales -->
+              <div class="col-md-6">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>Gastos Totales (Calculado)</mat-label>
+                  <input
+                    matInput
+                    type="number"
+                    formControlName="totalExpenses"
+                    placeholder="0.00"
+                    readonly
+                    class="bg-light"
+                  />
+                  <span matTextPrefix>S/ </span>
+                  <mat-hint>
+                    @if (getExpenseCount() > 0) {
+                    {{ getExpenseCount() }} registro(s) de gasto encontrado(s) } @else { No se
+                    encontraron gastos para este período y usuario }
+                  </mat-hint>
+                  <mat-error>
+                    @if (calculationForm.get('totalExpenses')?.hasError('required')) { Los gastos
+                    totales son requeridos }
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <!-- Detalle de Ingresos y Gastos -->
+              @if (showIncomeExpenseDetail()) {
+              <div class="col-12">
+                <div class="card bg-light border-0 mt-2">
+                  <div class="card-header bg-info text-white py-2">
+                    <h6 class="mb-0">
+                      <i class="fas fa-info-circle me-2"></i>
+                      Detalle de Ingresos y Gastos para {{ getCurrentPeriod() }}
+                    </h6>
+                  </div>
+                  <div class="card-body p-3">
+                    <div class="row">
+                      <!-- Detalle Ingresos -->
+                      <div class="col-md-6">
+                        <h6 class="text-success">
+                          <i class="fas fa-arrow-up me-1"></i>
+                          Ingresos ({{ getIncomeCount() }})
+                        </h6>
+                        @if (getCurrentIncomes().length > 0) {
+                        <div class="list-group list-group-flush">
+                          @for (income of getCurrentIncomes(); track income.id) {
+                          <div class="list-group-item border-0 px-0 py-1">
+                            <div class="d-flex justify-content-between align-items-center">
+                              <div>
+                                <small class="fw-bold">{{ income.source }}</small>
+                                <div class="text-muted small">{{ income.description }}</div>
+                              </div>
+                              <span class="text-success fw-bold"
+                                >S/ {{ income.amount | number : '1.2-2' }}</span
+                              >
+                            </div>
+                          </div>
+                          }
+                        </div>
+                        } @else {
+                        <p class="text-muted small mb-0">No hay ingresos registrados</p>
+                        }
+                      </div>
+
+                      <!-- Detalle Gastos -->
+                      <div class="col-md-6">
+                        <h6 class="text-danger">
+                          <i class="fas fa-arrow-down me-1"></i>
+                          Gastos ({{ getExpenseCount() }})
+                        </h6>
+                        @if (getCurrentExpenses().length > 0) {
+                        <div class="list-group list-group-flush">
+                          @for (expense of getCurrentExpenses(); track expense.id) {
+                          <div class="list-group-item border-0 px-0 py-1">
+                            <div class="d-flex justify-content-between align-items-center">
+                              <div>
+                                <small class="fw-bold">{{ expense.category }}</small>
+                                <div class="text-muted small">{{ expense.description }}</div>
+                              </div>
+                              <span class="text-danger fw-bold"
+                                >S/ {{ expense.amount | number : '1.2-2' }}</span
+                              >
+                            </div>
+                          </div>
+                          }
+                        </div>
+                        } @else {
+                        <p class="text-muted small mb-0">No hay gastos registrados</p>
+                        }
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              }
+            </div>
+
+            <!-- Resumen del Cálculo -->
+            @if (showCalculationSummary()) {
+            <div class="card bg-light border-0 mt-4">
+              <div class="card-header bg-success text-white">
+                <h6 class="mb-0">
+                  <i class="fas fa-chart-line me-2"></i>
+                  Resumen del Cálculo
+                </h6>
+              </div>
+              <div class="card-body">
+                <div class="row g-3">
+                  <div class="col-md-4">
+                    <div class="text-center">
+                      <div class="h5 text-success mb-1">
+                        S/ {{ taxableIncome() | number : '1.2-2' }}
+                      </div>
+                      <small class="text-muted">Renta Gravable</small>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="text-center">
+                      <div class="h5 text-primary mb-1">{{ selectedTaxRate() * 100 }}%</div>
+                      <small class="text-muted">Tasa de Impuesto</small>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="text-center">
+                      <div class="h5 text-danger mb-1">S/ {{ taxAmount() | number : '1.2-2' }}</div>
+                      <small class="text-muted">Impuesto a Pagar</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            }
+
+            <!-- Estado -->
+            <div class="mt-4">
+              <label class="form-label fw-bold">Estado del Cálculo</label>
+              <div class="d-flex gap-3">
+                <mat-chip-set>
+                  <mat-chip
+                    [class]="
+                      currentStatus() === 'pending' ? 'bg-warning text-dark' : 'bg-light text-muted'
+                    "
+                    (click)="updateStatus('pending')"
+                  >
+                    <i class="fas fa-clock me-2"></i>
+                    Pendiente
+                  </mat-chip>
+                  <mat-chip
+                    [class]="
+                      currentStatus() === 'completed'
+                        ? 'bg-success text-white'
+                        : 'bg-light text-muted'
+                    "
+                    (click)="updateStatus('completed')"
+                  >
+                    <i class="fas fa-check-circle me-2"></i>
+                    Completado
+                  </mat-chip>
+                </mat-chip-set>
               </div>
             </div>
 
             <!-- Botones de Acción -->
-            <div class="row mt-4">
-              <div class="col-12">
-                <div class="d-flex gap-2 flex-wrap">
-                  <button mat-raised-button color="primary" type="submit"
-                    [disabled]="calculationForm.invalid || !taxCalculation()" class="btn-action">
-                    <mat-icon>save</mat-icon>
-                    Guardar Cálculo
-                  </button>
-
-                  <button mat-raised-button color="accent" type="button" (click)="generatePDF()"
-                    [disabled]="!taxCalculation()" class="btn-action">
-                    <mat-icon>picture_as_pdf</mat-icon>
-                    Generar PDF
-                  </button>
-
-                  <button mat-stroked-button type="button" (click)="resetForm()" class="btn-action">
-                    <mat-icon>refresh</mat-icon>
-                    Limpiar
-                  </button>
-                  <button mat-stroked-button type="button" (click)="back()" class="btn-action">
-                    Volver
-                  </button>
-                </div>
-              </div>
+            <div class="d-flex gap-3 mt-4 pt-3 border-top">
+              <button
+                mat-raised-button
+                color="primary"
+                type="submit"
+                [disabled]="calculationForm.invalid || isLoading()"
+                class="flex-fill"
+              >
+                <i class="fas fa-save me-2"></i>
+                Guardar Cálculo
+              </button>
+              <button
+                mat-stroked-button
+                color="warn"
+                type="button"
+                (click)="resetForm()"
+                [disabled]="isLoading()"
+              >
+                <i class="fas fa-refresh me-2"></i>
+                Limpiar
+              </button>
             </div>
           </form>
-
-          @if (errorMessage()) {
-          <div class="alert alert-danger" role="alert">
-            <mat-icon class="me-2">error</mat-icon>
-            {{ errorMessage() }}
-          </div>
           }
+        </mat-card-content>
+      </mat-card>
 
-          <!-- Información del Usuario Seleccionado -->
-          @if (selectedUser()) {
-          <mat-card class="user-info-card mb-4">
-            <mat-card-header>
-              <mat-card-title class="h5">
-                <mat-icon class="me-2">person</mat-icon>
-                Información del Contribuyente
-              </mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-              <div class="row">
-                <div class="col-md-6">
-                  <p><strong>Nombre:</strong> {{ selectedUser()!.name }}</p>
-                  <p><strong>Email:</strong> {{ selectedUser()!.email }}</p>
-                </div>
-                <div class="col-md-6">
-                  <p><strong>Documento:</strong> {{ selectedUser()!.documentType }} - {{ selectedUser()!.documentNumber
-                    }}</p>
-                  @if (selectedUser()!.address) {
-                  <p><strong>Dirección:</strong> {{ selectedUser()!.address }}</p>
+      <!-- Mensaje de Error -->
+      @if (errorMessage()) {
+      <div class="alert alert-danger mt-4" role="alert">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        {{ errorMessage() }}
+      </div>
+      }
+    </div>
+  </div>
+
+  <!-- Lista de Cálculos Existentes -->
+  <div class="row justify-content-center mt-5">
+    <div class="col-12">
+      <mat-card class="shadow">
+        <mat-card-header class="bg-info text-white p-4">
+          <mat-card-title class="h5 mb-0 text-white d-flex align-items-center">
+            <mat-icon class="me-2">list_alt</mat-icon>
+            Historial de Cálculos
+            <span matBadge="{{ calculations().length }}" matBadgeColor="accent" class="ms-2">
+              Total
+            </span>
+          </mat-card-title>
+          <mat-card-subtitle class="text-white-50 mt-2">
+            Todos los cálculos de impuestos realizados
+          </mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content class="p-0">
+          @if (calculations().length === 0) {
+          <div class="text-center py-5">
+            <mat-icon class="display-1 text-muted mb-3">receipt_long</mat-icon>
+            <h5 class="text-muted">No hay cálculos registrados</h5>
+            <p class="text-muted">Los cálculos que realice aparecerán aquí</p>
+          </div>
+          } @else {
+          <div class="table-responsive">
+            <table mat-table [dataSource]="calculations()" class="w-100">
+              <!-- ID Column -->
+              <ng-container matColumnDef="id">
+                <th mat-header-cell *matHeaderCellDef class="fw-bold">ID</th>
+                <td mat-cell *matCellDef="let calculation">
+                  <span class="badge bg-secondary">{{ calculation.id }}</span>
+                </td>
+              </ng-container>
+
+              <!-- Usuario Column -->
+              <ng-container matColumnDef="userId">
+                <th mat-header-cell *matHeaderCellDef class="fw-bold">Usuario</th>
+                <td mat-cell *matCellDef="let calculation">
+                  <div class="d-flex align-items-center">
+                    <mat-icon class="me-2 text-primary">person</mat-icon>
+                    <div>
+                      <div class="fw-bold">{{ getUserName(calculation.userId) }}</div>
+                      <small class="text-muted">{{ getUserEmail(calculation.userId) }}</small>
+                    </div>
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Período Column -->
+              <ng-container matColumnDef="period">
+                <th mat-header-cell *matHeaderCellDef class="fw-bold">Período</th>
+                <td mat-cell *matCellDef="let calculation">
+                  <span class="badge bg-primary">{{ calculation.period }}</span>
+                </td>
+              </ng-container>
+
+              <!-- Tipo de Impuesto Column -->
+              <ng-container matColumnDef="taxType">
+                <th mat-header-cell *matHeaderCellDef class="fw-bold">Tipo Impuesto</th>
+                <td mat-cell *matCellDef="let calculation">
+                  <div class="small">
+                    <div class="fw-bold">{{ getTaxTypeName(calculation.taxTypeId) }}</div>
+                    <div class="text-muted">{{ getTaxTypeRate(calculation.taxTypeId) * 100 }}%</div>
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Ingresos Column -->
+              <ng-container matColumnDef="totalIncome">
+                <th mat-header-cell *matHeaderCellDef class="fw-bold text-end">Ingresos</th>
+                <td mat-cell *matCellDef="let calculation" class="text-end">
+                  <div class="text-success fw-bold">
+                    S/ {{ calculation.totalIncome | number : '1.2-2' }}
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Gastos Column -->
+              <ng-container matColumnDef="totalExpenses">
+                <th mat-header-cell *matHeaderCellDef class="fw-bold text-end">Gastos</th>
+                <td mat-cell *matCellDef="let calculation" class="text-end">
+                  <div class="text-warning fw-bold">
+                    S/ {{ calculation.totalExpenses | number : '1.2-2' }}
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Renta Gravable Column -->
+              <ng-container matColumnDef="taxableIncome">
+                <th mat-header-cell *matHeaderCellDef class="fw-bold text-end">Renta Gravable</th>
+                <td mat-cell *matCellDef="let calculation" class="text-end">
+                  <div class="text-info fw-bold">
+                    S/ {{ calculation.taxableIncome | number : '1.2-2' }}
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Impuesto Column -->
+              <ng-container matColumnDef="taxAmount">
+                <th mat-header-cell *matHeaderCellDef class="fw-bold text-end">Impuesto</th>
+                <td mat-cell *matCellDef="let calculation" class="text-end">
+                  <div class="text-danger fw-bold fs-6">
+                    S/ {{ calculation.taxAmount | number : '1.2-2' }}
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Estado Column -->
+              <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef class="fw-bold">Estado</th>
+                <td mat-cell *matCellDef="let calculation">
+                  @if (calculation.status === 'completed') {
+                  <span
+                    class="badge bg-success d-flex align-items-center"
+                    style="width: fit-content"
+                  >
+                    <mat-icon class="me-1" style="font-size: 16px; width: 16px; height: 16px"
+                      >check_circle</mat-icon
+                    >
+                    Completado
+                  </span>
+                  } @else {
+                  <span
+                    class="badge bg-warning text-dark d-flex align-items-center"
+                    style="width: fit-content"
+                  >
+                    <mat-icon class="me-1" style="font-size: 16px; width: 16px; height: 16px"
+                      >schedule</mat-icon
+                    >
+                    Pendiente
+                  </span>
                   }
-                </div>
-              </div>
-            </mat-card-content>
-          </mat-card>
-          }
+                </td>
+              </ng-container>
 
-          <!-- Resumen de Cálculo -->
-          @if (taxCalculation()) {
-          <mat-card class="tax-summary-card mb-4">
-            <mat-card-header class="bg-success text-white">
-              <mat-card-title class="h5 mb-0">
-                <mat-icon class="me-2">assessment</mat-icon>
-                Resumen de Cálculo
-              </mat-card-title>
-            </mat-card-header>
-            <mat-card-content class="p-4">
-              <div class="row g-4">
-                <div class="col-md-3">
-                  <div class="summary-item">
-                    <h6 class="text-muted mb-1">Total Ingresos</h6>
-                    <h4 class="text-success mb-0">S/ {{ taxCalculation()!.totalIncome.toFixed(2) }}</h4>
+              <!-- Acciones Column -->
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef class="fw-bold text-center">Acciones</th>
+                <td mat-cell *matCellDef="let calculation" class="text-center">
+                  <div class="btn-group btn-group-sm">
+                    <button
+                      mat-mini-fab
+                      color="primary"
+                      matTooltip="Editar cálculo"
+                      (click)="editCalculation(calculation)"
+                      class="me-2"
+                    >
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button
+                      mat-mini-fab
+                      color="warn"
+                      matTooltip="Eliminar cálculo"
+                      (click)="deleteCalculation(calculation.id!)"
+                    >
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                    @if (calculation.status === 'pending') {
+                    <button
+                      mat-mini-fab
+                      color="accent"
+                      matTooltip="Marcar como completado"
+                      (click)="markAsCompleted(calculation.id!)"
+                      class="ms-2"
+                    >
+                      <mat-icon>done</mat-icon>
+                    </button>
+                    }
                   </div>
-                </div>
-                <div class="col-md-3">
-                  <div class="summary-item">
-                    <h6 class="text-muted mb-1">Total Gastos</h6>
-                    <h4 class="text-warning mb-0">S/ {{ taxCalculation()!.totalExpenses.toFixed(2) }}</h4>
-                  </div>
-                </div>
-                <div class="col-md-3">
-                  <div class="summary-item">
-                    <h6 class="text-muted mb-1">Renta Gravable</h6>
-                    <h4 class="text-info mb-0">S/ {{ taxCalculation()!.taxableIncome.toFixed(2) }}</h4>
-                  </div>
-                </div>
-                <div class="col-md-3">
-                  <div class="summary-item">
-                    <h6 class="text-muted mb-1">Total Impuesto</h6>
-                    <h4 class="text-danger mb-0">S/ {{ taxCalculation()!.totalTax.toFixed(2) }}</h4>
-                  </div>
-                </div>
-              </div>
+                </td>
+              </ng-container>
 
-              <hr class="my-4">
-
-              <div class="row">
-                <div class="col-md-6">
-                  <h6>Desglose de Impuestos:</h6>
-                  <ul class="list-unstyled">
-                    <li class="d-flex justify-content-between">
-                      <span>Impuesto a la Renta (IR):</span>
-                      <strong>S/ {{ taxCalculation()!.irTax.toFixed(2) }}</strong>
-                    </li>
-                    <li class="d-flex justify-content-between">
-                      <span>IGV:</span>
-                      <strong>S/ {{ taxCalculation()!.igvTax.toFixed(2) }}</strong>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </mat-card-content>
-          </mat-card>
-          }
-
-          <!-- Detalles de Ingresos y Gastos -->
-          @if (filteredIncomes().length > 0 || filteredExpenses().length > 0) {
-          <div class="row">
-            <!-- Tabla de Ingresos -->
-            @if (filteredIncomes().length > 0) {
-            <div class="col-md-6 mb-4">
-              <mat-card>
-                <mat-card-header class="bg-light">
-                  <mat-card-title class="h6 mb-0">
-                    <mat-icon class="me-2 text-success">trending_up</mat-icon>
-                    Ingresos del Período
-                  </mat-card-title>
-                </mat-card-header>
-                <mat-card-content class="p-0">
-                  <mat-table [dataSource]="filteredIncomes()" class="w-100">
-                    <ng-container matColumnDef="source">
-                      <mat-header-cell *matHeaderCellDef>Fuente</mat-header-cell>
-                      <mat-cell *matCellDef="let income">{{ income.source }}</mat-cell>
-                    </ng-container>
-
-                    <ng-container matColumnDef="amount">
-                      <mat-header-cell *matHeaderCellDef>Monto</mat-header-cell>
-                      <mat-cell *matCellDef="let income">
-                        <span class="badge bg-success">S/ {{ income.amount.toFixed(2) }}</span>
-                      </mat-cell>
-                    </ng-container>
-
-                    <ng-container matColumnDef="description">
-                      <mat-header-cell *matHeaderCellDef>Descripción</mat-header-cell>
-                      <mat-cell *matCellDef="let income">{{ income.description }}</mat-cell>
-                    </ng-container>
-
-                    <mat-header-row *matHeaderRowDef="displayedIncomeColumns"></mat-header-row>
-                    <mat-row *matRowDef="let row; columns: displayedIncomeColumns;"></mat-row>
-                  </mat-table>
-                </mat-card-content>
-              </mat-card>
-            </div>
-            }
-
-            <!-- Tabla de Gastos -->
-            @if (filteredExpenses().length > 0) {
-            <div class="col-md-6 mb-4">
-              <mat-card>
-                <mat-card-header class="bg-light">
-                  <mat-card-title class="h6 mb-0">
-                    <mat-icon class="me-2 text-danger">trending_down</mat-icon>
-                    Gastos del Período
-                  </mat-card-title>
-                </mat-card-header>
-                <mat-card-content class="p-0">
-                  <mat-table [dataSource]="filteredExpenses()" class="w-100">
-                    <ng-container matColumnDef="category">
-                      <mat-header-cell *matHeaderCellDef>Categoría</mat-header-cell>
-                      <mat-cell *matCellDef="let expense">{{ expense.category }}</mat-cell>
-                    </ng-container>
-
-                    <ng-container matColumnDef="amount">
-                      <mat-header-cell *matHeaderCellDef>Monto</mat-header-cell>
-                      <mat-cell *matCellDef="let expense">
-                        <span class="badge bg-warning">S/ {{ expense.amount.toFixed(2) }}</span>
-                      </mat-cell>
-                    </ng-container>
-
-                    <ng-container matColumnDef="description">
-                      <mat-header-cell *matHeaderCellDef>Descripción</mat-header-cell>
-                      <mat-cell *matCellDef="let expense">{{ expense.description }}</mat-cell>
-                    </ng-container>
-
-                    <mat-header-row *matHeaderRowDef="displayedExpenseColumns"></mat-header-row>
-                    <mat-row *matRowDef="let row; columns: displayedExpenseColumns;"></mat-row>
-                  </mat-table>
-                </mat-card-content>
-              </mat-card>
-            </div>
-            }
+              <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+              <tr
+                mat-row
+                *matRowDef="let row; columns: displayedColumns"
+                class="calculation-row"
+                [class.table-success]="row.status === 'completed'"
+                [class.table-warning]="row.status === 'pending'"
+              ></tr>
+            </table>
           </div>
-          }
 
-          @if (selectedUser() && filteredIncomes().length === 0 && filteredExpenses().length === 0 &&
-          calculationForm.get('period')?.value) {
-          <div class="alert alert-info" role="alert">
-            <mat-icon class="me-2">info</mat-icon>
-            No se encontraron ingresos ni gastos para el contribuyente y período seleccionados.
+          <!-- Resumen de Estadísticas -->
+          <div class="card-footer bg-light">
+            <div class="row text-center">
+              <div class="col-md-3">
+                <div class="h5 text-success mb-1">{{ getCompletedCount() }}</div>
+                <small class="text-muted">Completados</small>
+              </div>
+              <div class="col-md-3">
+                <div class="h5 text-warning mb-1">{{ getPendingCount() }}</div>
+                <small class="text-muted">Pendientes</small>
+              </div>
+              <div class="col-md-3">
+                <div class="h5 text-primary mb-1">S/ {{ getTotalIncome() | number : '1.2-2' }}</div>
+                <small class="text-muted">Total Ingresos</small>
+              </div>
+              <div class="col-md-3">
+                <div class="h5 text-danger mb-1">S/ {{ getTotalTaxes() | number : '1.2-2' }}</div>
+                <small class="text-muted">Total Impuestos</small>
+              </div>
+            </div>
           </div>
-          }
           }
         </mat-card-content>
       </mat-card>

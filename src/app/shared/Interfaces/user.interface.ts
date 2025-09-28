@@ -9,5 +9,5 @@ email: string,
 role: UserRole,
 documentType: string,
 documentNumber: string,
-address: string
+address?: string
 }

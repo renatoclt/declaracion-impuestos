@@ -21,7 +21,8 @@ const MATERIAL_MODULES = [
   MatProgressBarModule ,
   MatSelectModule,
   MatSnackBarModule,
-  MatTableModule
+  MatTableModule,
+  MatIconModule
 ];
 
 @NgModule({

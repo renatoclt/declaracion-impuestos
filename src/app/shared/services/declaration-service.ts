@@ -26,7 +26,7 @@ export class DeclarationService {
         declarations.map(d => ({
           ...d,
           user: users.find(u => u.id == d.userId),
-          taxType: taxTypes.find(t => t.id == (d.taxTypeId))
+          taxType: taxTypes.find(t => t.id.toString() == (d.taxTypeId.toString()))
         }))
       )
     );
