@@ -156,7 +156,10 @@ export class ExpenseComponent implements OnInit {
             (u.name ?? '').toLowerCase() !== 'administrador'
           );
 
-      const userItem = this.formConfig.items.find(i => i.prop === 'userId');
+      const userItem = this.formConfig.items.find(
+  (i: { prop: string; options?: Array<{ value: any; label: string }> }) => i.prop === 'userId'
+);
+
       if (userItem) {
         userItem.options = options.map(u => ({
           value: Number(u.id),
@@ -244,8 +247,10 @@ export class ExpenseComponent implements OnInit {
   };
 
   const req$ = this.editingId !== null
-    ? this.expenseService.updateExpense({ id: this.editingId, ...base })
-    : this.expenseService.addExpense(base);
+  ? this.expenseService.updateExpense(
+      { id: this.editingId as Expense['id'], ...base } as Expense
+    )
+  : this.expenseService.addExpense(base);
 
   req$.subscribe({
     next: () => {

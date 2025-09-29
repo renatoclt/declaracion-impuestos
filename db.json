@@ -181,7 +181,7 @@
       "userId": 6,
       "period": "2025-06",
       "amount": 1000,
-      "description": "reloj elegante",
+      "description": "reloj caro",
       "category": "Vestimenta"
     },
     {
@@ -223,6 +223,22 @@
       "amount": 500,
       "description": "bebidas",
       "category": "Alimentación"
+    },
+    {
+      "id": "0672",
+      "userId": 5,
+      "period": "2025-06",
+      "amount": 500,
+      "description": "gasolina y carro",
+      "category": "Transporte"
+    },
+    {
+      "id": "6023",
+      "userId": 6,
+      "period": "2025-09",
+      "amount": 1000,
+      "description": "gasolina",
+      "category": "Transporte"
     }
   ],
   "declarations": [
